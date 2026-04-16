@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tablero de tareas (offline)</title>
+    <title>Task board (offline)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -83,6 +83,13 @@
         gap: 2px;
       }
 
+      .title-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
       .title h1 {
         margin: 0;
         font-size: 16px;
@@ -94,6 +101,93 @@
         margin: 0;
         font-size: 12px;
         color: var(--muted);
+      }
+
+      .title-input {
+        height: 28px;
+        border-radius: 999px;
+        border: 1px solid rgba(12, 10, 9, 0.12);
+        padding: 0 10px;
+        font-size: 12px;
+        color: rgba(12, 10, 9, 0.78);
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 6px 14px -14px rgba(12, 10, 9, 0.4);
+        width: 200px;
+      }
+
+      .title-input:focus {
+        outline: none;
+        border-color: rgba(245, 158, 11, 0.55);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+      }
+
+      .dlg {
+        border: 1px solid rgba(12, 10, 9, 0.12);
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: var(--shadow);
+        max-width: 420px;
+        width: calc(100vw - 48px);
+      }
+
+      .dlg::backdrop {
+        background: rgba(12, 10, 9, 0.32);
+      }
+
+      .dlg-form {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .dlg-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .dlg-label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        color: rgba(12, 10, 9, 0.72);
+      }
+
+      .dlg-input {
+        height: 30px;
+        border-radius: 10px;
+        border: 1px solid rgba(12, 10, 9, 0.12);
+        padding: 0 10px;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .dlg-input:focus {
+        outline: none;
+        border-color: rgba(245, 158, 11, 0.55);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+      }
+
+      .dlg-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .dlg-title {
+        font-size: 14px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+        color: rgba(12, 10, 9, 0.86);
+      }
+
+      .dlg-msg {
+        margin: 0;
+        font-size: 12px;
+        color: rgba(12, 10, 9, 0.72);
+        line-height: 1.35;
       }
 
       .actions {
@@ -191,7 +285,7 @@
       thead th.sticky-left-1,
       tbody td.sticky-left-1 {
         position: sticky;
-        left: 200px;
+        left: 280px;
         z-index: 7;
         background: #fff;
         border-right: 1px solid var(--line);
@@ -206,15 +300,15 @@
       }
 
       th.col-task {
-        width: 200px;
-        min-width: 200px;
+        width: 280px;
+        min-width: 280px;
         text-align: left;
         padding-left: 10px;
       }
 
       th.col-owner {
-        width: 140px;
-        min-width: 140px;
+        width: 70px;
+        min-width: 70px;
         text-align: left;
         padding-left: 10px;
       }
@@ -242,6 +336,10 @@
 
       tbody tr:hover td {
         background: rgba(255, 251, 235, 0.45);
+      }
+
+      tbody tr.is-selected td {
+        background: rgba(251, 191, 36, 0.16);
       }
 
       tbody td {
@@ -272,6 +370,20 @@
         background: rgba(245, 158, 11, 0.12);
       }
 
+      .cell-btn[disabled] {
+        cursor: default;
+        background: rgba(12, 10, 9, 0.03);
+      }
+
+      .cell-btn[disabled]:hover {
+        background: rgba(12, 10, 9, 0.03);
+      }
+
+      .cell-btn.is-selected {
+        box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.55);
+        background: rgba(245, 158, 11, 0.18);
+      }
+
       .ring {
         width: 20px;
         height: 20px;
@@ -286,6 +398,13 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        position: relative;
+      }
+
+      .subtask-dot {
+        color: rgba(12, 10, 9, 0.35);
+        font-size: 12px;
+        line-height: 1;
       }
 
       .row-title,
@@ -300,6 +419,8 @@
 
       .row-title {
         font-weight: 600;
+        min-width: 0;
+        transition: padding-right 140ms ease;
       }
 
       .row-owner {
@@ -307,14 +428,24 @@
       }
 
       .row-actions {
-        display: flex;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
         gap: 4px;
         opacity: 0;
         transition: opacity 140ms ease;
+        pointer-events: none;
       }
 
       tbody tr:hover .row-actions {
         opacity: 1;
+        pointer-events: auto;
+      }
+
+      tbody tr:hover .row-title {
+        padding-right: 118px;
       }
 
       .icon-btn {
@@ -355,19 +486,90 @@
       <div class="shell">
         <div class="header">
           <div class="title">
-            <h1 class="font-display">Calendario de tareas</h1>
-            <p>Offline: abre este fichero en cualquier navegador y empieza a usarlo.</p>
+            <div class="title-top">
+              <h1 class="font-display">Task calendar</h1>
+              <input
+                id="projectName"
+                class="title-input"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Project name"
+              />
+              <button class="btn" id="btnDates" type="button">Dates</button>
+            </div>
+            <p>Offline: open this file in any browser and start using it.</p>
           </div>
           <div class="actions">
-            <button class="btn primary" id="btnNew">Nueva tarea</button>
-            <button class="btn" id="btnExport">Exportar</button>
-            <label class="btn" for="fileImport">Importar</label>
+            <button class="btn" id="btnExport">Export</button>
+            <label class="btn" for="fileImport">Import</label>
             <input id="fileImport" type="file" accept="application/json" style="display: none" />
             <div class="hint">
-              <span class="kbd">Click izq</span><span>avance</span> · <span class="kbd">Click der</span><span>semáforo</span>
+              <span class="kbd">Left click</span><span>progress</span> · <span class="kbd">Right click</span><span>status</span>
+            </div>
+            <div class="hint">
+              <span class="kbd">Shift/Ctrl</span><span>multi-select cells</span> · <span class="kbd">Drag</span><span>move rows in same level</span>
             </div>
           </div>
         </div>
+
+        <dialog id="dlgDates" class="dlg">
+          <form method="dialog" class="dlg-form" novalidate>
+            <div class="dlg-grid">
+              <label class="dlg-label">
+                Start date
+                <input class="dlg-input" id="startDate" type="date" />
+              </label>
+              <label class="dlg-label">
+                End date
+                <input class="dlg-input" id="endDate" type="date" />
+              </label>
+            </div>
+            <div class="dlg-actions">
+              <button class="btn" value="cancel">Cancel</button>
+              <button class="btn primary" value="ok">Save</button>
+            </div>
+          </form>
+        </dialog>
+
+        <dialog id="dlgTask" class="dlg">
+          <form method="dialog" class="dlg-form" id="dlgTaskForm" novalidate>
+            <div class="dlg-title" id="dlgTaskHeading">New task</div>
+            <label class="dlg-label">
+              Task name
+              <input class="dlg-input" id="dlgTaskTitle" type="text" />
+            </label>
+            <label class="dlg-label">
+              Tech owner
+              <input class="dlg-input" id="dlgTaskOwner" type="text" />
+            </label>
+            <div class="dlg-actions">
+              <button class="btn" value="cancel">Cancel</button>
+              <button class="btn primary" value="ok">Save</button>
+            </div>
+          </form>
+        </dialog>
+
+        <dialog id="dlgConfirm" class="dlg">
+          <form method="dialog" class="dlg-form">
+            <div class="dlg-title">Confirm</div>
+            <p class="dlg-msg" id="dlgConfirmMessage"></p>
+            <div class="dlg-actions">
+              <button class="btn" value="cancel">Cancel</button>
+              <button class="btn primary" value="ok">OK</button>
+            </div>
+          </form>
+        </dialog>
+
+        <dialog id="dlgAlert" class="dlg">
+          <form method="dialog" class="dlg-form">
+            <div class="dlg-title">Notice</div>
+            <p class="dlg-msg" id="dlgAlertMessage"></p>
+            <div class="dlg-actions">
+              <button class="btn primary" value="ok">OK</button>
+            </div>
+          </form>
+        </dialog>
 
         <div class="board">
           <div class="scroll">
@@ -379,8 +581,8 @@
 
     <script>
       const STORAGE_KEY = 'tablero:offline:v1'
-      const START_ISO = '2026-04-13'
-      const END_ISO = '2026-04-30'
+      const DEFAULT_START_ISO = '2026-04-13'
+      const DEFAULT_END_ISO = '2026-04-30'
       const PERCENTS = [0, 25, 50, 75, 100]
       const STATUSES = ['red', 'yellow', 'green', 'black']
       const STATUS_COLORS = {
@@ -390,19 +592,32 @@
         black: getComputedStyle(document.documentElement).getPropertyValue('--black').trim(),
       }
 
-      const fmtDow = new Intl.DateTimeFormat('es-ES', { weekday: 'short' })
-      const fmtLabel = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit' })
+      const fmtDow = new Intl.DateTimeFormat('en-GB', { weekday: 'short' })
+      const fmtLabel = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit' })
+      const fmtRange = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short' })
 
       const toISODate = (d) => d.toISOString().slice(0, 10)
       const parseISO = (iso) => {
         const d = new Date(iso)
-        if (Number.isNaN(d.getTime())) throw new Error('Fecha inválida')
+        if (Number.isNaN(d.getTime())) throw new Error('Invalid date')
         return d
       }
 
+      const isIsoDate = (v) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)
+
+      const formatRange = (startIso, endIso) => {
+        try {
+          const s = parseISO(startIso)
+          const e = parseISO(endIso)
+          return `${fmtRange.format(s)} – ${fmtRange.format(e)}`
+        } catch {
+          return ''
+        }
+      }
+
       const buildDates = () => {
-        const start = parseISO(START_ISO)
-        const end = parseISO(END_ISO)
+        const start = parseISO(state.board.startIso)
+        const end = parseISO(state.board.endIso)
         const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()))
         const endUtc = Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate())
         const out = []
@@ -418,23 +633,209 @@
       }
 
       const state = {
+        board: {
+          projectName: '',
+          startIso: DEFAULT_START_ISO,
+          endIso: DEFAULT_END_ISO,
+        },
         tasks: [],
+        ui: {
+          selectedCells: [],
+          anchorCell: null,
+          editableTaskOrder: [],
+        },
       }
 
-      const uid = () => (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2))
+      const uid = () =>
+        (globalThis.crypto && globalThis.crypto.randomUUID
+          ? globalThis.crypto.randomUUID()
+          : String(Date.now()) + Math.random().toString(16).slice(2))
 
       const load = () => {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (!raw) return
         try {
           const parsed = JSON.parse(raw)
+          if (typeof parsed?.board?.projectName === 'string') {
+            state.board.projectName = parsed.board.projectName.trim()
+          }
+          if (isIsoDate(parsed?.board?.startIso)) state.board.startIso = parsed.board.startIso
+          if (isIsoDate(parsed?.board?.endIso)) state.board.endIso = parsed.board.endIso
           if (Array.isArray(parsed.tasks)) state.tasks = parsed.tasks
         } catch {
         }
       }
 
       const save = () => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks: state.tasks }))
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ board: state.board, tasks: state.tasks }),
+        )
+      }
+
+      let confirmAction = null
+      let taskDialogParentId = null
+
+      const showAlert = (message) => {
+        const dlg = document.getElementById('dlgAlert')
+        const msg = document.getElementById('dlgAlertMessage')
+        if (!dlg || typeof dlg.showModal !== 'function' || !msg) return
+        msg.textContent = String(message || '')
+        dlg.showModal()
+      }
+
+      const showConfirm = (message, onOk) => {
+        const dlg = document.getElementById('dlgConfirm')
+        const msg = document.getElementById('dlgConfirmMessage')
+        if (!dlg || typeof dlg.showModal !== 'function' || !msg) return
+        confirmAction = typeof onOk === 'function' ? onOk : null
+        msg.textContent = String(message || '')
+        dlg.showModal()
+      }
+
+      const showTaskDialog = (parentId) => {
+        const dlg = document.getElementById('dlgTask')
+        const heading = document.getElementById('dlgTaskHeading')
+        const titleInput = document.getElementById('dlgTaskTitle')
+        const ownerInput = document.getElementById('dlgTaskOwner')
+        if (!dlg || typeof dlg.showModal !== 'function') return
+        if (!heading || !titleInput || !ownerInput) return
+
+        taskDialogParentId = typeof parentId === 'string' ? parentId : null
+        heading.textContent = taskDialogParentId ? 'New subtask' : 'New task'
+        titleInput.value = ''
+        ownerInput.value = ''
+        dlg.showModal()
+        setTimeout(() => titleInput.focus(), 0)
+      }
+
+      const bindDialogs = () => {
+        const confirmDlg = document.getElementById('dlgConfirm')
+        if (confirmDlg) {
+          confirmDlg.addEventListener('close', () => {
+            if (confirmDlg.returnValue !== 'ok') {
+              confirmAction = null
+              return
+            }
+            const fn = confirmAction
+            confirmAction = null
+            if (typeof fn === 'function') fn()
+          })
+        }
+
+        const taskDlg = document.getElementById('dlgTask')
+        if (taskDlg) {
+          taskDlg.addEventListener('close', () => {
+            if (taskDlg.returnValue !== 'ok') {
+              taskDialogParentId = null
+              return
+            }
+            const title = String(document.getElementById('dlgTaskTitle')?.value || '').trim()
+            const owner = String(document.getElementById('dlgTaskOwner')?.value || '').trim()
+            if (!title || !owner) {
+              taskDialogParentId = null
+              showAlert('Task name and Tech owner are required.')
+              return
+            }
+            const parentId = taskDialogParentId
+            const order = nextOrderInGroup(parentId)
+            const id = uid()
+            state.tasks.push({ id, parentId, title, owner, order, cells: {} })
+            normalizeTasks()
+            save()
+            render()
+            taskDialogParentId = null
+          })
+        }
+
+        const datesDlg = document.getElementById('dlgDates')
+        const datesForm = datesDlg?.querySelector('form')
+        if (datesForm) {
+          datesForm.addEventListener('submit', (e) => {
+            const start = document.getElementById('startDate')?.value || ''
+            const end = document.getElementById('endDate')?.value || ''
+            if (!start || !end) {
+              e.preventDefault()
+              showAlert('Start date and End date are required.')
+              return
+            }
+            try {
+              if (parseISO(start).getTime() > parseISO(end).getTime()) {
+                e.preventDefault()
+                showAlert('Invalid date range.')
+              }
+            } catch {
+              e.preventDefault()
+              showAlert('Invalid date format.')
+            }
+          })
+        }
+      }
+
+      const updateHeader = () => {
+        const nameInput = document.getElementById('projectName')
+        if (nameInput && document.activeElement !== nameInput) {
+          nameInput.value = state.board.projectName || ''
+        }
+
+        const datesBtn = document.getElementById('btnDates')
+        if (datesBtn) {
+          const range = formatRange(state.board.startIso, state.board.endIso)
+          datesBtn.textContent = range ? `Dates: ${range}` : 'Dates'
+        }
+
+        document.title = state.board.projectName
+          ? `${state.board.projectName} — Task board (offline)`
+          : 'Task board (offline)'
+      }
+
+      const bindHeader = () => {
+        const nameInput = document.getElementById('projectName')
+        if (nameInput) {
+          nameInput.addEventListener('input', (e) => {
+            state.board.projectName = String(e.target.value || '').trim()
+            save()
+            updateHeader()
+          })
+        }
+
+        const datesBtn = document.getElementById('btnDates')
+        if (datesBtn) {
+          datesBtn.addEventListener('click', () => {
+            const dlg = document.getElementById('dlgDates')
+            const startInput = document.getElementById('startDate')
+            const endInput = document.getElementById('endDate')
+
+            if (dlg && typeof dlg.showModal === 'function' && startInput && endInput) {
+              startInput.value = state.board.startIso
+              endInput.value = state.board.endIso
+              dlg.showModal()
+              return
+            }
+
+            showAlert('Dates editor is not supported in this browser.')
+          })
+        }
+
+        const dlg = document.getElementById('dlgDates')
+        if (dlg) {
+          dlg.addEventListener('close', () => {
+            if (dlg.returnValue !== 'ok') return
+
+            const start = document.getElementById('startDate')?.value || ''
+            const end = document.getElementById('endDate')?.value || ''
+            if (!isIsoDate(start) || !isIsoDate(end)) return
+            if (parseISO(start).getTime() > parseISO(end).getTime()) return
+
+            state.board.startIso = start
+            state.board.endIso = end
+            save()
+            updateHeader()
+            render()
+          })
+        }
+
+        updateHeader()
       }
 
       const nextPercent = (p) => {
@@ -469,14 +870,260 @@
         `
       }
 
+      const STATUS_RANK = {
+        green: 1,
+        yellow: 2,
+        red: 3,
+        black: 4,
+      }
+
+      const readCellValue = (task, iso) => {
+        const c = task?.cells?.[iso]
+        const percent = PERCENTS.includes(c?.percent) ? c.percent : 0
+        const status = STATUSES.includes(c?.status) ? c.status : 'green'
+        return { percent, status }
+      }
+
+      const aggregateCell = (parentId, iso) => {
+        const kids = state.tasks.filter((t) => t.parentId === parentId)
+        if (kids.length === 0) return { percent: 0, status: 'green', count: 0 }
+
+        let sum = 0
+        let worst = 'green'
+        let worstRank = 0
+        kids.forEach((t) => {
+          const v = readCellValue(t, iso)
+          sum += Number(v.percent) || 0
+          const r = STATUS_RANK[v.status] || 1
+          if (r > worstRank) {
+            worstRank = r
+            worst = v.status
+          }
+        })
+
+        return { percent: Math.round(sum / kids.length), status: worst, count: kids.length }
+      }
+
+      const normalizeTasks = () => {
+        const ids = new Set(state.tasks.map((t) => String(t?.id || '')))
+        state.tasks.forEach((t) => {
+          if (typeof t.parentId !== 'string') t.parentId = null
+          if (t.parentId && !ids.has(t.parentId)) t.parentId = null
+          if (!t.cells) t.cells = {}
+        })
+
+        const groups = new Map()
+        state.tasks.forEach((t) => {
+          const key = t.parentId || '__root__'
+          if (!groups.has(key)) groups.set(key, [])
+          groups.get(key).push(t)
+        })
+        groups.forEach((list) => {
+          list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+          list.forEach((t, idx) => (t.order = idx))
+        })
+      }
+
+      const nextOrderInGroup = (parentId) => {
+        const pid = typeof parentId === 'string' ? parentId : null
+        const group = state.tasks.filter((t) => (t.parentId || null) === pid)
+        return group.length ? Math.max(...group.map((t) => t.order ?? 0)) + 1 : 0
+      }
+
+      const moveTaskById = (id, delta) => {
+        const task = state.tasks.find((x) => x.id === id)
+        if (!task) return false
+        const groupId = task.parentId || null
+        const group = state.tasks
+          .filter((x) => (x.parentId || null) === groupId)
+          .slice()
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+        const from = group.findIndex((x) => x.id === id)
+        const to = from + delta
+        if (from === -1 || to < 0 || to >= group.length) return false
+
+        const [row] = group.splice(from, 1)
+        group.splice(to, 0, row)
+        group.forEach((t, idx) => (t.order = idx))
+        normalizeTasks()
+        return true
+      }
+
+      const moveTaskToIndex = (id, toIndex) => {
+        const task = state.tasks.find((x) => x.id === id)
+        if (!task) return false
+        const groupId = task.parentId || null
+        const group = state.tasks
+          .filter((x) => (x.parentId || null) === groupId)
+          .slice()
+          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+        const from = group.findIndex((x) => x.id === id)
+        if (from === -1 || toIndex < 0 || toIndex >= group.length) return false
+
+        const [row] = group.splice(from, 1)
+        group.splice(toIndex, 0, row)
+        group.forEach((t, idx) => (t.order = idx))
+        normalizeTasks()
+        return true
+      }
+
+      const copyTaskById = (id) => {
+        const t = state.tasks.find((x) => x.id === id)
+        if (!t) return null
+
+        const makeCopy = (src) => JSON.parse(JSON.stringify(src))
+
+        if (!t.parentId) {
+          const kids = state.tasks
+            .filter((x) => x.parentId === t.id)
+            .slice()
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+
+          const parentCopy = makeCopy(t)
+          parentCopy.id = uid()
+          parentCopy.parentId = null
+          parentCopy.order = nextOrderInGroup(null)
+          parentCopy.title = (parentCopy.title || '') + ' (copy)'
+          state.tasks.push(parentCopy)
+
+          kids.forEach((k) => {
+            const childCopy = makeCopy(k)
+            childCopy.id = uid()
+            childCopy.parentId = parentCopy.id
+            childCopy.order = nextOrderInGroup(parentCopy.id)
+            state.tasks.push(childCopy)
+          })
+
+          normalizeTasks()
+          return parentCopy.id
+        }
+
+        const copy = makeCopy(t)
+        copy.id = uid()
+        copy.order = nextOrderInGroup(t.parentId)
+        copy.title = (copy.title || '') + ' (copy)'
+        state.tasks.push(copy)
+        normalizeTasks()
+        return copy.id
+      }
+
+      const ensureStarterTask = () => {
+        const hasParent = state.tasks.some((x) => !x.parentId)
+        if (hasParent) return
+        state.tasks.push({
+          id: uid(),
+          parentId: null,
+          title: '',
+          owner: '',
+          order: nextOrderInGroup(null),
+          cells: {},
+        })
+        normalizeTasks()
+      }
+
+      const cellKey = (taskId, date) => `${taskId}::${date}`
+
+      const isCellSelected = (taskId, date) =>
+        state.ui.selectedCells.includes(cellKey(taskId, date))
+
+      const cleanCellSelection = (dates) => {
+        const dateSet = new Set(dates.map((d) => d.iso))
+        const rowSet = new Set(state.ui.editableTaskOrder)
+        state.ui.selectedCells = state.ui.selectedCells.filter((k) => {
+          const [taskId, date] = String(k).split('::')
+          return rowSet.has(taskId) && dateSet.has(date)
+        })
+        if (state.ui.anchorCell) {
+          const a = state.ui.anchorCell
+          if (!rowSet.has(a.taskId) || !dateSet.has(a.date)) state.ui.anchorCell = null
+        }
+      }
+
+      const selectCellRange = (fromCell, toCell, additive) => {
+        const rowIds = state.ui.editableTaskOrder
+        const colIds = buildDates().map((d) => d.iso)
+        const fromRow = rowIds.indexOf(fromCell.taskId)
+        const toRow = rowIds.indexOf(toCell.taskId)
+        const fromCol = colIds.indexOf(fromCell.date)
+        const toCol = colIds.indexOf(toCell.date)
+        if (fromRow === -1 || toRow === -1 || fromCol === -1 || toCol === -1) return
+
+        const rStart = Math.min(fromRow, toRow)
+        const rEnd = Math.max(fromRow, toRow)
+        const cStart = Math.min(fromCol, toCol)
+        const cEnd = Math.max(fromCol, toCol)
+
+        const next = additive ? new Set(state.ui.selectedCells) : new Set()
+        for (let r = rStart; r <= rEnd; r += 1) {
+          for (let c = cStart; c <= cEnd; c += 1) {
+            next.add(cellKey(rowIds[r], colIds[c]))
+          }
+        }
+        state.ui.selectedCells = Array.from(next)
+      }
+
+      const getEditTargets = (taskId, date, event) => {
+        const current = { taskId, date }
+        const ctrl = event.ctrlKey || event.metaKey
+        const shift = event.shiftKey
+
+        if (shift && state.ui.anchorCell) {
+          selectCellRange(state.ui.anchorCell, current, ctrl)
+          return null
+        }
+
+        if (ctrl) {
+          const key = cellKey(taskId, date)
+          const set = new Set(state.ui.selectedCells)
+          if (set.has(key)) set.delete(key)
+          else set.add(key)
+          state.ui.selectedCells = Array.from(set)
+          state.ui.anchorCell = current
+          return null
+        }
+
+        const key = cellKey(taskId, date)
+        const selected = new Set(state.ui.selectedCells)
+        if (selected.size > 1 && selected.has(key)) {
+          return state.ui.selectedCells
+            .map((k) => {
+              const [t, d] = k.split('::')
+              return { taskId: t, date: d }
+            })
+            .filter((x) => x.taskId && x.date)
+        }
+
+        state.ui.selectedCells = [key]
+        state.ui.anchorCell = current
+        return [current]
+      }
+
+      const deleteTaskById = (id) => {
+        const t = state.tasks.find((x) => x.id === id)
+        if (!t) return false
+
+        if (!t.parentId) {
+          state.tasks = state.tasks.filter((x) => x.id !== id && x.parentId !== id)
+        } else {
+          state.tasks = state.tasks.filter((x) => x.id !== id)
+        }
+
+        normalizeTasks()
+        ensureStarterTask()
+        return true
+      }
+
       const render = () => {
         const dates = buildDates()
+        ensureStarterTask()
         const table = document.getElementById('table')
         const thead = `
           <thead>
             <tr>
-              <th class="sticky-left-0 col-task">Tarea</th>
-              <th class="sticky-left-1 col-owner">Responsable técnico</th>
+              <th class="sticky-left-0 col-task">Task</th>
+              <th class="sticky-left-1 col-owner">Tech owner</th>
               ${dates
                 .map(
                   (d) => `
@@ -491,57 +1138,137 @@
           </thead>
         `
 
+        const byOrder = (a, b) => (a.order ?? 0) - (b.order ?? 0)
+        const parents = state.tasks.filter((t) => !t.parentId).slice().sort(byOrder)
+        const childrenMap = new Map()
+        state.tasks
+          .filter((t) => t.parentId)
+          .forEach((t) => {
+            if (!childrenMap.has(t.parentId)) childrenMap.set(t.parentId, [])
+            childrenMap.get(t.parentId).push(t)
+          })
+        childrenMap.forEach((list) => list.sort(byOrder))
+        state.ui.editableTaskOrder = parents.flatMap((p) => {
+          const kids = childrenMap.get(p.id) || []
+          return kids.length ? kids.map((x) => x.id) : [p.id]
+        })
+        cleanCellSelection(dates)
+
         const rows =
-          state.tasks.length === 0
+          parents.length === 0
             ? `
               <tr>
                 <td colspan="${2 + dates.length}" style="padding: 22px 14px; text-align: center; color: rgba(12,10,9,0.42);">
-                  No hay tareas aún. Crea la primera con “Nueva tarea”.
+                  No tasks available.
                 </td>
               </tr>
             `
-            : state.tasks
-                .slice()
-                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                .map((task) => {
-                  const tId = task.id
-                  const title = task.title || ''
-                  const owner = task.owner || ''
-                  return `
-                    <tr draggable="true" data-task-id="${tId}">
+            : parents
+                .map((parent) => {
+                  const pId = parent.id
+                  const pTitle = parent.title || ''
+                  const pOwner = parent.owner || ''
+                  const subs = childrenMap.get(pId) || []
+
+                  const isLeaf = subs.length === 0
+                  const parentRow = `
+                    <tr draggable="true" data-task-id="${pId}">
                       <td class="sticky-left-0" style="padding-left: 10px;">
                         <div class="row-top">
-                          <input class="row-title" value="${escapeHtml(title)}" data-task-title="${tId}" />
+                          <input class="row-title" value="${escapeHtml(pTitle)}" data-task-title="${pId}" />
                           <div class="row-actions">
-                            <button class="icon-btn" data-action="dup" data-task="${tId}" title="Duplicar">⧉</button>
-                            <button class="icon-btn danger" data-action="del" data-task="${tId}" title="Eliminar">×</button>
+                            <button class="icon-btn" data-action="addSub" data-parent="${pId}" title="Add subtask">+</button>
+                            <button class="icon-btn" data-action="dup" data-task="${pId}" title="Duplicate">⧉</button>
+                            <button class="icon-btn danger" data-action="del" data-task="${pId}" title="Delete">×</button>
                           </div>
                         </div>
                       </td>
                       <td class="sticky-left-1" style="padding-left: 10px;">
-                        <input class="row-owner" value="${escapeHtml(owner)}" data-task-owner="${tId}" />
+                        <input class="row-owner" value="${escapeHtml(pOwner)}" data-task-owner="${pId}" />
                       </td>
-                      ${dates
-                        .map((d) => {
-                          const cell = ensureCell(task, d.iso)
-                          const percent = cell.percent ?? 0
-                          const status = cell.status || 'green'
-                          return `
-                            <td>
-                              <button class="cell-btn" data-task="${tId}" data-date="${d.iso}" aria-label="${d.dow} ${d.label}: ${percent}% (${status})">
-                                <span class="ring">${ringSvg(percent, status)}</span>
-                              </button>
-                            </td>
-                          `
-                        })
-                        .join('')}
+                      ${
+                        isLeaf
+                          ? dates
+                              .map((d) => {
+                                const cell = ensureCell(parent, d.iso)
+                                const percent = cell.percent ?? 0
+                                const status = cell.status || 'green'
+                                const selected = isCellSelected(pId, d.iso) ? ' is-selected' : ''
+                                return `
+                                  <td>
+                                    <button class="cell-btn${selected}" data-task="${pId}" data-date="${d.iso}" aria-label="${d.dow} ${d.label}: ${percent}% (${status})">
+                                      <span class="ring">${ringSvg(percent, status)}</span>
+                                    </button>
+                                  </td>
+                                `
+                              })
+                              .join('')
+                          : dates
+                              .map((d) => {
+                                const agg = aggregateCell(pId, d.iso)
+                                const percent = agg.percent
+                                const status = agg.status
+                                const label = `${d.dow} ${d.label}: aggregated ${percent}% (${status}) from ${agg.count} subtasks`
+                                return `
+                                  <td>
+                                    <button class="cell-btn" disabled aria-label="${escapeHtml(label)}">
+                                      <span class="ring">${ringSvg(percent, status)}</span>
+                                    </button>
+                                  </td>
+                                `
+                              })
+                              .join('')
+                      }
                     </tr>
                   `
+
+                  const subRows = subs
+                    .map((task) => {
+                      const tId = task.id
+                      const title = task.title || ''
+                      const owner = task.owner || ''
+                      return `
+                        <tr class="is-subtask" draggable="true" data-task-id="${tId}">
+                          <td class="sticky-left-0" style="padding-left: 10px;">
+                            <div class="row-top">
+                              <span class="subtask-dot">↳</span>
+                              <input class="row-title" value="${escapeHtml(title)}" data-task-title="${tId}" />
+                              <div class="row-actions">
+                                <button class="icon-btn" data-action="dup" data-task="${tId}" title="Duplicate">⧉</button>
+                                <button class="icon-btn danger" data-action="del" data-task="${tId}" title="Delete">×</button>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="sticky-left-1" style="padding-left: 10px;">
+                            <input class="row-owner" value="${escapeHtml(owner)}" data-task-owner="${tId}" />
+                          </td>
+                          ${dates
+                            .map((d) => {
+                              const cell = ensureCell(task, d.iso)
+                              const percent = cell.percent ?? 0
+                              const status = cell.status || 'green'
+                              const selected = isCellSelected(tId, d.iso) ? ' is-selected' : ''
+                              return `
+                                <td>
+                                  <button class="cell-btn${selected}" data-task="${tId}" data-date="${d.iso}" aria-label="${d.dow} ${d.label}: ${percent}% (${status})">
+                                    <span class="ring">${ringSvg(percent, status)}</span>
+                                  </button>
+                                </td>
+                              `
+                            })
+                            .join('')}
+                        </tr>
+                      `
+                    })
+                    .join('')
+
+                  return parentRow + subRows
                 })
                 .join('')
 
         table.innerHTML = thead + `<tbody>${rows}</tbody>`
         bind()
+        updateHeader()
       }
 
       const escapeHtml = (s) =>
@@ -576,28 +1303,31 @@
         document.querySelectorAll('[data-action="dup"]').forEach((el) => {
           el.addEventListener('click', (e) => {
             const id = e.target.getAttribute('data-task')
-            const t = state.tasks.find((x) => x.id === id)
-            if (!t) return
-            const now = Date.now()
-            const copy = JSON.parse(JSON.stringify(t))
-            copy.id = uid()
-            copy.order = (state.tasks.length ? Math.max(...state.tasks.map((x) => x.order ?? 0)) : -1) + 1
-            copy.title = (copy.title || '') + ' (copia)'
-            copy.createdAt = now
-            state.tasks.push(copy)
+            if (!id) return
+            copyTaskById(id)
             save()
             render()
+          })
+        })
+
+        document.querySelectorAll('[data-action="addSub"]').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            const parentId = e.target.getAttribute('data-parent')
+            const parent = state.tasks.find((x) => x.id === parentId && !x.parentId)
+            if (!parent) return
+            showTaskDialog(parent.id)
           })
         })
 
         document.querySelectorAll('[data-action="del"]').forEach((el) => {
           el.addEventListener('click', (e) => {
             const id = e.target.getAttribute('data-task')
-            if (!confirm('¿Eliminar esta fila de tarea?')) return
-            state.tasks = state.tasks.filter((x) => x.id !== id)
-            state.tasks.forEach((t, idx) => (t.order = idx))
-            save()
-            render()
+            if (!id) return
+            showConfirm('Delete this task row?', () => {
+              deleteTaskById(id)
+              save()
+              render()
+            })
           })
         })
 
@@ -606,10 +1336,18 @@
             const btn = e.currentTarget
             const taskId = btn.getAttribute('data-task')
             const date = btn.getAttribute('data-date')
-            const t = state.tasks.find((x) => x.id === taskId)
-            if (!t) return
-            const cell = ensureCell(t, date)
-            cell.percent = nextPercent(cell.percent ?? 0)
+            if (!taskId || !date) return
+            const targets = getEditTargets(taskId, date, e)
+            if (!targets) {
+              render()
+              return
+            }
+            targets.forEach(({ taskId: tId, date: d }) => {
+              const t = state.tasks.find((x) => x.id === tId)
+              if (!t) return
+              const cell = ensureCell(t, d)
+              cell.percent = nextPercent(cell.percent ?? 0)
+            })
             save()
             render()
           })
@@ -619,10 +1357,18 @@
             const btn = e.currentTarget
             const taskId = btn.getAttribute('data-task')
             const date = btn.getAttribute('data-date')
-            const t = state.tasks.find((x) => x.id === taskId)
-            if (!t) return
-            const cell = ensureCell(t, date)
-            cell.status = nextStatus(cell.status || 'red')
+            if (!taskId || !date) return
+            const targets = getEditTargets(taskId, date, e)
+            if (!targets) {
+              render()
+              return
+            }
+            targets.forEach(({ taskId: tId, date: d }) => {
+              const t = state.tasks.find((x) => x.id === tId)
+              if (!t) return
+              const cell = ensureCell(t, d)
+              cell.status = nextStatus(cell.status || 'red')
+            })
             save()
             render()
           })
@@ -646,14 +1392,25 @@
             e.preventDefault()
             const overId = tr.getAttribute('data-task-id')
             if (!dragId || dragId === overId) return
-            const list = state.tasks.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            const from = list.findIndex((x) => x.id === dragId)
-            const to = list.findIndex((x) => x.id === overId)
+            const dragTask = state.tasks.find((x) => x.id === dragId)
+            const overTask = state.tasks.find((x) => x.id === overId)
+            if (!dragTask || !overTask) return
+            const groupA = dragTask.parentId || null
+            const groupB = overTask.parentId || null
+            if (groupA !== groupB) return
+
+            const to = state.tasks
+              .filter((x) => (x.parentId || null) === groupA)
+              .slice()
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .findIndex((x) => x.id === overId)
+            const from = state.tasks
+              .filter((x) => (x.parentId || null) === groupA)
+              .slice()
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .findIndex((x) => x.id === dragId)
             if (from === -1 || to === -1) return
-            const [row] = list.splice(from, 1)
-            list.splice(to, 0, row)
-            list.forEach((t, idx) => (t.order = idx))
-            state.tasks = list
+            moveTaskToIndex(dragId, to)
             save()
             render()
           })
@@ -664,41 +1421,48 @@
         })
       }
 
-      const newTask = () => {
-        const title = prompt('Nombre de la tarea:')
-        if (!title) return
-        const owner = prompt('Responsable técnico:')
-        if (!owner) return
-        const order = state.tasks.length ? Math.max(...state.tasks.map((t) => t.order ?? 0)) + 1 : 0
-        state.tasks.push({ id: uid(), title: title.trim(), owner: owner.trim(), order, cells: {} })
-        save()
-        render()
-      }
-
       const exportJson = () => {
-        const blob = new Blob([JSON.stringify({ tasks: state.tasks }, null, 2)], { type: 'application/json' })
+        const blob = new Blob(
+          [JSON.stringify({ board: state.board, tasks: state.tasks }, null, 2)],
+          { type: 'application/json' },
+        )
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'tablero.json'
+        a.download = 'board.json'
         a.click()
         URL.revokeObjectURL(url)
       }
 
       const importJson = async (file) => {
-        const text = await file.text()
-        const parsed = JSON.parse(text)
-        if (!parsed || !Array.isArray(parsed.tasks)) return
-        state.tasks = parsed.tasks
-        state.tasks.forEach((t, idx) => {
-          if (typeof t.order !== 'number') t.order = idx
-          if (!t.cells) t.cells = {}
-        })
-        save()
-        render()
+        try {
+          const text = await file.text()
+          const parsed = JSON.parse(text)
+          if (!parsed || !Array.isArray(parsed.tasks)) {
+            showAlert('Invalid file format. Expected: { "tasks": [] }.')
+            return
+          }
+          if (typeof parsed?.board?.projectName === 'string') {
+            state.board.projectName = parsed.board.projectName.trim()
+          }
+          if (isIsoDate(parsed?.board?.startIso)) state.board.startIso = parsed.board.startIso
+          if (isIsoDate(parsed?.board?.endIso)) state.board.endIso = parsed.board.endIso
+          state.tasks = parsed.tasks
+          state.tasks.forEach((t, idx) => {
+            if (typeof t.order !== 'number') t.order = idx
+            if (typeof t.parentId !== 'string') t.parentId = null
+            if (!t.cells) t.cells = {}
+          })
+          normalizeTasks()
+          ensureStarterTask()
+          save()
+          updateHeader()
+          render()
+        } catch {
+          showAlert('Could not import JSON file.')
+        }
       }
 
-      document.getElementById('btnNew').addEventListener('click', newTask)
       document.getElementById('btnExport').addEventListener('click', exportJson)
       document.getElementById('fileImport').addEventListener('change', (e) => {
         const file = e.target.files && e.target.files[0]
@@ -708,8 +1472,11 @@
       })
 
       load()
+      normalizeTasks()
+      ensureStarterTask()
+      bindDialogs()
+      bindHeader()
       render()
     </script>
   </body>
 </html>
-
