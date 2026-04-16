@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tablero de tareas (offline)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Source+Sans+3:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg0: #fff7ed;
+        --bg1: #fff1f2;
+        --paper: #ffffff;
+        --line: rgba(12, 10, 9, 0.12);
+        --line-soft: rgba(12, 10, 9, 0.08);
+        --text: #1c1917;
+        --muted: rgba(12, 10, 9, 0.55);
+        --shadow: 0 20px 70px -60px rgba(12, 10, 9, 0.55);
+
+        --red: #e07b86;
+        --yellow: #e6c26e;
+        --green: #74c7a5;
+        --black: #1a1a1a;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Noto Sans", Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: radial-gradient(
+          circle at top,
+          rgba(255, 237, 213, 0.75),
+          rgba(255, 255, 255, 0.92) 40%,
+          rgba(250, 250, 249, 1) 70%
+        );
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .font-display {
+        font-family: "Fraunces", ui-serif, Georgia, "Times New Roman", Times, serif;
+        font-variation-settings: "opsz" 80;
+      }
+
+      .wrap {
+        height: calc(100% - 32px);
+        padding: 16px 12px;
+        box-sizing: border-box;
+      }
+
+      .shell {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border: 1px solid rgba(251, 191, 36, 0.25);
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: linear-gradient(90deg, rgba(255, 251, 235, 1), rgba(255, 241, 242, 1));
+        box-shadow: 0 8px 20px -18px rgba(12, 10, 9, 0.35);
+      }
+
+      .title {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .title h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+      }
+
+      .title p {
+        margin: 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .btn {
+        border: 1px solid rgba(12, 10, 9, 0.12);
+        background: #fff;
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 12px;
+        color: rgba(12, 10, 9, 0.78);
+        box-shadow: 0 6px 14px -14px rgba(12, 10, 9, 0.4);
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .btn.primary {
+        border: none;
+        background: rgba(245, 158, 11, 1);
+        color: #fff;
+      }
+
+      .btn:hover {
+        filter: brightness(0.98);
+      }
+
+      .btn.primary:hover {
+        filter: brightness(0.96);
+      }
+
+      .hint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        background: rgba(12, 10, 9, 0.06);
+        padding: 6px 10px;
+        font-size: 11px;
+        color: rgba(12, 10, 9, 0.62);
+        white-space: nowrap;
+      }
+
+      .board {
+        flex: 1;
+        min-height: 0;
+        border: 1px solid rgba(12, 10, 9, 0.12);
+        border-radius: 16px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .scroll {
+        height: 100%;
+        overflow: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 11px;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: linear-gradient(180deg, rgba(250, 250, 249, 1), rgba(245, 245, 244, 1));
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        padding: 8px 6px;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 600;
+        color: rgba(12, 10, 9, 0.58);
+      }
+
+      thead th.sticky-left-0,
+      tbody td.sticky-left-0 {
+        position: sticky;
+        left: 0;
+        z-index: 7;
+        background: #fff;
+        border-right: 1px solid var(--line);
+      }
+
+      thead th.sticky-left-1,
+      tbody td.sticky-left-1 {
+        position: sticky;
+        left: 200px;
+        z-index: 7;
+        background: #fff;
+        border-right: 1px solid var(--line);
+      }
+
+      thead th.sticky-left-0 {
+        background: rgba(245, 245, 244, 1);
+      }
+
+      thead th.sticky-left-1 {
+        background: rgba(245, 245, 244, 1);
+      }
+
+      th.col-task {
+        width: 200px;
+        min-width: 200px;
+        text-align: left;
+        padding-left: 10px;
+      }
+
+      th.col-owner {
+        width: 140px;
+        min-width: 140px;
+        text-align: left;
+        padding-left: 10px;
+      }
+
+      th.col-day {
+        min-width: 48px;
+        width: 48px;
+      }
+
+      .th-dow {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .th-date {
+        display: inline-block;
+        margin-top: 4px;
+        border-radius: 999px;
+        background: #fff;
+        padding: 3px 6px;
+        font-weight: 650;
+        color: rgba(12, 10, 9, 0.72);
+        box-shadow: 0 6px 14px -14px rgba(12, 10, 9, 0.4);
+      }
+
+      tbody tr:hover td {
+        background: rgba(255, 251, 235, 0.45);
+      }
+
+      tbody td {
+        border-top: 1px solid rgba(12, 10, 9, 0.06);
+        border-right: 1px solid rgba(12, 10, 9, 0.06);
+        padding: 6px 6px;
+        vertical-align: middle;
+      }
+
+      tbody td.sticky-left-0,
+      tbody td.sticky-left-1 {
+        background: #fff;
+      }
+
+      .cell-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(12, 10, 9, 0.04);
+        display: grid;
+        place-items: center;
+        margin: 0 auto;
+        cursor: pointer;
+      }
+
+      .cell-btn:hover {
+        background: rgba(245, 158, 11, 0.12);
+      }
+
+      .ring {
+        width: 20px;
+        height: 20px;
+        position: relative;
+      }
+
+      .ring svg {
+        display: block;
+      }
+
+      .row-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .row-title,
+      .row-owner {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 0;
+        font-size: 12px;
+      }
+
+      .row-title {
+        font-weight: 600;
+      }
+
+      .row-owner {
+        color: rgba(12, 10, 9, 0.72);
+      }
+
+      .row-actions {
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity 140ms ease;
+      }
+
+      tbody tr:hover .row-actions {
+        opacity: 1;
+      }
+
+      .icon-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        color: rgba(12, 10, 9, 0.45);
+      }
+
+      .icon-btn:hover {
+        background: rgba(12, 10, 9, 0.06);
+        color: rgba(12, 10, 9, 0.8);
+      }
+
+      .icon-btn.danger:hover {
+        background: rgba(225, 29, 72, 0.1);
+        color: rgba(190, 18, 60, 1);
+      }
+
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        border: 1px solid rgba(12, 10, 9, 0.14);
+        border-bottom-width: 2px;
+        border-radius: 6px;
+        padding: 1px 6px;
+        background: rgba(255, 255, 255, 0.8);
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="shell">
+        <div class="header">
+          <div class="title">
+            <h1 class="font-display">Calendario de tareas</h1>
+            <p>Offline: abre este fichero en cualquier navegador y empieza a usarlo.</p>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="btnNew">Nueva tarea</button>
+            <button class="btn" id="btnExport">Exportar</button>
+            <label class="btn" for="fileImport">Importar</label>
+            <input id="fileImport" type="file" accept="application/json" style="display: none" />
+            <div class="hint">
+              <span class="kbd">Click izq</span><span>avance</span> · <span class="kbd">Click der</span><span>semáforo</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="board">
+          <div class="scroll">
+            <table id="table"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'tablero:offline:v1'
+      const START_ISO = '2026-04-13'
+      const END_ISO = '2026-04-30'
+      const PERCENTS = [0, 25, 50, 75, 100]
+      const STATUSES = ['red', 'yellow', 'green', 'black']
+      const STATUS_COLORS = {
+        red: getComputedStyle(document.documentElement).getPropertyValue('--red').trim(),
+        yellow: getComputedStyle(document.documentElement).getPropertyValue('--yellow').trim(),
+        green: getComputedStyle(document.documentElement).getPropertyValue('--green').trim(),
+        black: getComputedStyle(document.documentElement).getPropertyValue('--black').trim(),
+      }
+
+      const fmtDow = new Intl.DateTimeFormat('es-ES', { weekday: 'short' })
+      const fmtLabel = new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: '2-digit' })
+
+      const toISODate = (d) => d.toISOString().slice(0, 10)
+      const parseISO = (iso) => {
+        const d = new Date(iso)
+        if (Number.isNaN(d.getTime())) throw new Error('Fecha inválida')
+        return d
+      }
+
+      const buildDates = () => {
+        const start = parseISO(START_ISO)
+        const end = parseISO(END_ISO)
+        const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()))
+        const endUtc = Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate())
+        const out = []
+        while (cursor.getTime() <= endUtc) {
+          out.push({
+            iso: toISODate(cursor),
+            dow: fmtDow.format(cursor).replace('.', ''),
+            label: fmtLabel.format(cursor),
+          })
+          cursor.setUTCDate(cursor.getUTCDate() + 1)
+        }
+        return out
+      }
+
+      const state = {
+        tasks: [],
+      }
+
+      const uid = () => (crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2))
+
+      const load = () => {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (!raw) return
+        try {
+          const parsed = JSON.parse(raw)
+          if (Array.isArray(parsed.tasks)) state.tasks = parsed.tasks
+        } catch {
+        }
+      }
+
+      const save = () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks: state.tasks }))
+      }
+
+      const nextPercent = (p) => {
+        const idx = PERCENTS.indexOf(p)
+        return PERCENTS[(idx + 1) % PERCENTS.length]
+      }
+
+      const nextStatus = (s) => {
+        const idx = STATUSES.indexOf(s)
+        return STATUSES[(idx + 1) % STATUSES.length]
+      }
+
+      const ensureCell = (task, iso) => {
+        if (!task.cells) task.cells = {}
+        if (!task.cells[iso]) task.cells[iso] = { percent: 0, status: 'green' }
+        return task.cells[iso]
+      }
+
+      const ringSvg = (percent, status) => {
+        const size = 20
+        const stroke = 4
+        const r = (size - stroke) / 2
+        const c = 2 * Math.PI * r
+        const dash = (percent / 100) * c
+        const color = STATUS_COLORS[status] || STATUS_COLORS.green
+        return `
+          <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
+            <circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="rgba(0,0,0,0.12)" stroke-width="${stroke}" fill="transparent"></circle>
+            <circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${color}" stroke-width="${stroke}" fill="transparent" stroke-linecap="round"
+              stroke-dasharray="${dash} ${c - dash}" transform="rotate(-90 ${size / 2} ${size / 2})"></circle>
+          </svg>
+        `
+      }
+
+      const render = () => {
+        const dates = buildDates()
+        const table = document.getElementById('table')
+        const thead = `
+          <thead>
+            <tr>
+              <th class="sticky-left-0 col-task">Tarea</th>
+              <th class="sticky-left-1 col-owner">Responsable técnico</th>
+              ${dates
+                .map(
+                  (d) => `
+                    <th class="col-day">
+                      <div class="th-dow">${d.dow}</div>
+                      <div class="th-date">${d.label}</div>
+                    </th>
+                  `,
+                )
+                .join('')}
+            </tr>
+          </thead>
+        `
+
+        const rows =
+          state.tasks.length === 0
+            ? `
+              <tr>
+                <td colspan="${2 + dates.length}" style="padding: 22px 14px; text-align: center; color: rgba(12,10,9,0.42);">
+                  No hay tareas aún. Crea la primera con “Nueva tarea”.
+                </td>
+              </tr>
+            `
+            : state.tasks
+                .slice()
+                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                .map((task) => {
+                  const tId = task.id
+                  const title = task.title || ''
+                  const owner = task.owner || ''
+                  return `
+                    <tr draggable="true" data-task-id="${tId}">
+                      <td class="sticky-left-0" style="padding-left: 10px;">
+                        <div class="row-top">
+                          <input class="row-title" value="${escapeHtml(title)}" data-task-title="${tId}" />
+                          <div class="row-actions">
+                            <button class="icon-btn" data-action="dup" data-task="${tId}" title="Duplicar">⧉</button>
+                            <button class="icon-btn danger" data-action="del" data-task="${tId}" title="Eliminar">×</button>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="sticky-left-1" style="padding-left: 10px;">
+                        <input class="row-owner" value="${escapeHtml(owner)}" data-task-owner="${tId}" />
+                      </td>
+                      ${dates
+                        .map((d) => {
+                          const cell = ensureCell(task, d.iso)
+                          const percent = cell.percent ?? 0
+                          const status = cell.status || 'green'
+                          return `
+                            <td>
+                              <button class="cell-btn" data-task="${tId}" data-date="${d.iso}" aria-label="${d.dow} ${d.label}: ${percent}% (${status})">
+                                <span class="ring">${ringSvg(percent, status)}</span>
+                              </button>
+                            </td>
+                          `
+                        })
+                        .join('')}
+                    </tr>
+                  `
+                })
+                .join('')
+
+        table.innerHTML = thead + `<tbody>${rows}</tbody>`
+        bind()
+      }
+
+      const escapeHtml = (s) =>
+        String(s)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;')
+
+      const bind = () => {
+        document.querySelectorAll('[data-task-title]').forEach((el) => {
+          el.addEventListener('change', (e) => {
+            const id = e.target.getAttribute('data-task-title')
+            const t = state.tasks.find((x) => x.id === id)
+            if (!t) return
+            t.title = e.target.value.trim()
+            save()
+          })
+        })
+
+        document.querySelectorAll('[data-task-owner]').forEach((el) => {
+          el.addEventListener('change', (e) => {
+            const id = e.target.getAttribute('data-task-owner')
+            const t = state.tasks.find((x) => x.id === id)
+            if (!t) return
+            t.owner = e.target.value.trim()
+            save()
+          })
+        })
+
+        document.querySelectorAll('[data-action="dup"]').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-task')
+            const t = state.tasks.find((x) => x.id === id)
+            if (!t) return
+            const now = Date.now()
+            const copy = JSON.parse(JSON.stringify(t))
+            copy.id = uid()
+            copy.order = (state.tasks.length ? Math.max(...state.tasks.map((x) => x.order ?? 0)) : -1) + 1
+            copy.title = (copy.title || '') + ' (copia)'
+            copy.createdAt = now
+            state.tasks.push(copy)
+            save()
+            render()
+          })
+        })
+
+        document.querySelectorAll('[data-action="del"]').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-task')
+            if (!confirm('¿Eliminar esta fila de tarea?')) return
+            state.tasks = state.tasks.filter((x) => x.id !== id)
+            state.tasks.forEach((t, idx) => (t.order = idx))
+            save()
+            render()
+          })
+        })
+
+        document.querySelectorAll('.cell-btn').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            const btn = e.currentTarget
+            const taskId = btn.getAttribute('data-task')
+            const date = btn.getAttribute('data-date')
+            const t = state.tasks.find((x) => x.id === taskId)
+            if (!t) return
+            const cell = ensureCell(t, date)
+            cell.percent = nextPercent(cell.percent ?? 0)
+            save()
+            render()
+          })
+
+          el.addEventListener('contextmenu', (e) => {
+            e.preventDefault()
+            const btn = e.currentTarget
+            const taskId = btn.getAttribute('data-task')
+            const date = btn.getAttribute('data-date')
+            const t = state.tasks.find((x) => x.id === taskId)
+            if (!t) return
+            const cell = ensureCell(t, date)
+            cell.status = nextStatus(cell.status || 'red')
+            save()
+            render()
+          })
+        })
+
+        const tbody = document.querySelector('#table tbody')
+        let dragId = null
+
+        tbody.querySelectorAll('tr[draggable="true"]').forEach((tr) => {
+          tr.addEventListener('dragstart', (e) => {
+            dragId = tr.getAttribute('data-task-id')
+            e.dataTransfer.effectAllowed = 'move'
+          })
+
+          tr.addEventListener('dragover', (e) => {
+            e.preventDefault()
+            e.dataTransfer.dropEffect = 'move'
+          })
+
+          tr.addEventListener('drop', (e) => {
+            e.preventDefault()
+            const overId = tr.getAttribute('data-task-id')
+            if (!dragId || dragId === overId) return
+            const list = state.tasks.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            const from = list.findIndex((x) => x.id === dragId)
+            const to = list.findIndex((x) => x.id === overId)
+            if (from === -1 || to === -1) return
+            const [row] = list.splice(from, 1)
+            list.splice(to, 0, row)
+            list.forEach((t, idx) => (t.order = idx))
+            state.tasks = list
+            save()
+            render()
+          })
+
+          tr.addEventListener('dragend', () => {
+            dragId = null
+          })
+        })
+      }
+
+      const newTask = () => {
+        const title = prompt('Nombre de la tarea:')
+        if (!title) return
+        const owner = prompt('Responsable técnico:')
+        if (!owner) return
+        const order = state.tasks.length ? Math.max(...state.tasks.map((t) => t.order ?? 0)) + 1 : 0
+        state.tasks.push({ id: uid(), title: title.trim(), owner: owner.trim(), order, cells: {} })
+        save()
+        render()
+      }
+
+      const exportJson = () => {
+        const blob = new Blob([JSON.stringify({ tasks: state.tasks }, null, 2)], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'tablero.json'
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+
+      const importJson = async (file) => {
+        const text = await file.text()
+        const parsed = JSON.parse(text)
+        if (!parsed || !Array.isArray(parsed.tasks)) return
+        state.tasks = parsed.tasks
+        state.tasks.forEach((t, idx) => {
+          if (typeof t.order !== 'number') t.order = idx
+          if (!t.cells) t.cells = {}
+        })
+        save()
+        render()
+      }
+
+      document.getElementById('btnNew').addEventListener('click', newTask)
+      document.getElementById('btnExport').addEventListener('click', exportJson)
+      document.getElementById('fileImport').addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0]
+        if (!file) return
+        importJson(file)
+        e.target.value = ''
+      })
+
+      load()
+      render()
+    </script>
+  </body>
+</html>
+
