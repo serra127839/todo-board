@@ -5,13 +5,13 @@ import { useAuthStore } from '@/stores/authStore'
 
 export default function Home() {
   useHydrateAuth()
-  const token = useAuthStore((s) => s.token)
+  const user = useAuthStore((s) => s.user)
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(255,237,213,0.75),rgba(255,255,255,0.9)_40%,rgba(250,250,249,1)_70%)] px-3 py-4">
       <div className="mx-auto flex h-[calc(100vh-32px)] w-full max-w-none flex-col">
         <div className="flex-1">
-          {token ? <BoardTable /> : <LoginDialog />}
+          {user ? <BoardTable /> : <LoginDialog />}
         </div>
       </div>
     </div>

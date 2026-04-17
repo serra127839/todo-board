@@ -1,39 +1,47 @@
 import { useEffect, useMemo, useState } from 'react'
 import { LockKeyhole } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
-
-type ApiOk = { success: true; data: { token: string } }
-type ApiErr = { success: false; error: string }
+import { supabase } from '@/supabaseClient'
 
 export default function LoginDialog() {
-  const setToken = useAuthStore((s) => s.setToken)
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const canSubmit = useMemo(() => password.trim().length > 0, [password])
+  const canSubmit = useMemo(
+    () => email.trim().length > 0 && password.trim().length > 0,
+    [email, password],
+  )
 
   useEffect(() => {
     setError(null)
-  }, [password])
+  }, [email, password, mode])
 
   const submit = async () => {
     if (!canSubmit || busy) return
     setBusy(true)
     try {
-      const res = await fetch('/api/auth/simple/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      })
-
-      const json = (await res.json()) as ApiOk | ApiErr
-      if (!json.success) {
-        setError('Wrong password')
-        return
+      if (mode === 'signin') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        })
+        if (error) {
+          setError(error.message)
+          return
+        }
+      } else {
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+        })
+        if (error) {
+          setError(error.message)
+          return
+        }
+        setError('Check your email to confirm your account if required.')
       }
-
-      setToken(json.data.token)
     } catch {
       setError('Could not connect')
     } finally {
@@ -54,13 +62,55 @@ export default function LoginDialog() {
                 Board access
               </div>
               <div className="text-xs text-stone-500">
-                Enter the shared password to access this URL.
+                Sign in to access this URL.
               </div>
             </div>
           </div>
         </div>
 
         <div className="space-y-3 px-5 py-4">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMode('signin')}
+              className={`rounded-full px-3 py-1.5 text-xs shadow-sm transition ${
+                mode === 'signin'
+                  ? 'bg-stone-900 text-white'
+                  : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+              }`}
+              type="button"
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => setMode('signup')}
+              className={`rounded-full px-3 py-1.5 text-xs shadow-sm transition ${
+                mode === 'signup'
+                  ? 'bg-stone-900 text-white'
+                  : 'border border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+              }`}
+              type="button"
+            >
+              Create account
+            </button>
+          </div>
+
+          <label className="block">
+            <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
+              Email
+            </div>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoFocus
+              type="email"
+              className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+              placeholder="name@company.com"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') submit()
+              }}
+            />
+          </label>
+
           <label className="block">
             <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
               Password
@@ -68,7 +118,6 @@ export default function LoginDialog() {
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoFocus
               type="password"
               className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
               placeholder="••••••••"
@@ -91,7 +140,7 @@ export default function LoginDialog() {
             disabled={!canSubmit || busy}
             className="rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition enabled:hover:bg-amber-600 disabled:opacity-50"
           >
-            Sign in
+            {mode === 'signin' ? 'Sign in' : 'Create account'}
           </button>
         </div>
       </div>

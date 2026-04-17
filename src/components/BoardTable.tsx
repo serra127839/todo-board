@@ -2,22 +2,11 @@ import { useEffect, useMemo, useState, type MouseEvent, type DragEvent, type Cha
 import { Plus, Copy, Trash2 } from 'lucide-react'
 import type { CellStatus } from '../../shared/boardTypes'
 import { useBoardStore } from '@/stores/boardStore'
-import { useBoardRealtime } from '@/hooks/useBoardRealtime'
 import { buildDateColumns } from '@/utils/dateRange'
 import { cellKey } from '@/utils/cellKey'
 import ProgressRing from '@/components/ProgressRing'
 import NewTaskDialog from '@/components/NewTaskDialog'
-import { useAuthStore } from '@/stores/authStore'
-import {
-  createTaskApi,
-  deleteTaskApi,
-  duplicateTaskApi,
-  patchBoardApi,
-  patchTaskApi,
-  putCellApi,
-  exportBoardApi,
-  importBoardApi,
-} from '@/api/boardApi'
+import { supabase } from '@/supabaseClient'
 
 const percentSteps: (0 | 25 | 50 | 75 | 100)[] = [0, 25, 50, 75, 100]
 const nextPercent = (current: 0 | 25 | 50 | 75 | 100): 0 | 25 | 50 | 75 | 100 => {
@@ -32,7 +21,15 @@ const nextStatus = (s: CellStatus): CellStatus => {
   return statuses[(idx + 1) % statuses.length]
 }
 
+const uid = (): string =>
+  globalThis.crypto && 'randomUUID' in globalThis.crypto
+    ? globalThis.crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`
+
 export default function BoardTable() {
+  const projectId = useBoardStore((s) => s.projectId)
+  const projects = useBoardStore((s) => s.projects)
+  const snapshots = useBoardStore((s) => s.snapshots)
   const board = useBoardStore((s) => s.board)
   const tasks = useBoardStore((s) => s.tasks)
   const cells = useBoardStore((s) => s.cells)
@@ -40,15 +37,25 @@ export default function BoardTable() {
   const applyEvent = useBoardStore((s) => s.applyEvent)
   const loading = useBoardStore((s) => s.loading)
   const error = useBoardStore((s) => s.error)
-  const connected = useBoardStore((s) => s.connected)
-  const setToken = useAuthStore((s) => s.setToken)
+  const dirty = useBoardStore((s) => s.dirty)
+  const saving = useBoardStore((s) => s.saving)
+  const saveError = useBoardStore((s) => s.saveError)
+  const lastSavedAt = useBoardStore((s) => s.lastSavedAt)
+  const selectProject = useBoardStore((s) => s.selectProject)
+  const createProject = useBoardStore((s) => s.createProject)
+  const renameCurrentProject = useBoardStore((s) => s.renameCurrentProject)
+  const refreshSnapshots = useBoardStore((s) => s.refreshSnapshots)
+  const saveSnapshot = useBoardStore((s) => s.saveSnapshot)
+  const restoreSnapshot = useBoardStore((s) => s.restoreSnapshot)
+  const saveNow = useBoardStore((s) => s.saveNow)
   const [dragId, setDragId] = useState<string | null>(null)
   const [newTaskOpen, setNewTaskOpen] = useState(false)
   const [projectNameDraft, setProjectNameDraft] = useState('')
   const [startDateDraft, setStartDateDraft] = useState('')
   const [endDateDraft, setEndDateDraft] = useState('')
-
-  useBoardRealtime()
+  const [newProjectName, setNewProjectName] = useState('')
+  const [backupName, setBackupName] = useState('')
+  const [restoreId, setRestoreId] = useState('')
 
   useEffect(() => {
     load()
@@ -69,19 +76,25 @@ export default function BoardTable() {
   )
 
   const onCreateTask = async (input: { title: string; owner: string }) => {
-    const created = await createTaskApi(input)
-    applyEvent({ type: 'task:created', payload: created })
+    const order = tasks.length
+    applyEvent({
+      type: 'task:created',
+      payload: { id: uid(), title: input.title.trim(), owner: input.owner.trim(), order },
+    })
   }
 
   const onDeleteTask = async (id: string) => {
     if (!window.confirm('Delete this task row?')) return
-    await deleteTaskApi(id)
     applyEvent({ type: 'task:deleted', payload: { id } })
   }
 
   const onDuplicateTask = async (id: string) => {
-    const created = await duplicateTaskApi(id, true)
-    applyEvent({ type: 'task:created', payload: created })
+    const src = tasks.find((t) => t.id === id)
+    if (!src) return
+    applyEvent({
+      type: 'task:created',
+      payload: { ...src, id: uid(), title: `${src.title} (copy)`, order: tasks.length },
+    })
   }
 
   const onCellLeftClick = async (taskId: string, date: string) => {
@@ -89,8 +102,15 @@ export default function BoardTable() {
     const existing = cells[key]
     const next = nextPercent(existing?.value.percent ?? 0)
     const status: CellStatus = existing?.value.status ?? 'green'
-    const updated = await putCellApi({ taskId, date, percent: next, status })
-    applyEvent({ type: 'cell:updated', payload: updated })
+    applyEvent({
+      type: 'cell:updated',
+      payload: {
+        taskId,
+        date,
+        value: { percent: next, status },
+        updatedAt: new Date().toISOString(),
+      },
+    })
   }
 
   const onCellRightClick = async (e: MouseEvent, taskId: string, date: string) => {
@@ -99,18 +119,27 @@ export default function BoardTable() {
     const existing = cells[key]
     const percent: 0 | 25 | 50 | 75 | 100 = existing?.value.percent ?? 0
     const status = existing ? nextStatus(existing.value.status) : 'red'
-    const updated = await putCellApi({ taskId, date, percent, status })
-    applyEvent({ type: 'cell:updated', payload: updated })
+    applyEvent({
+      type: 'cell:updated',
+      payload: {
+        taskId,
+        date,
+        value: { percent, status },
+        updatedAt: new Date().toISOString(),
+      },
+    })
   }
 
   const onTitleBlur = async (taskId: string, value: string) => {
-    const updated = await patchTaskApi(taskId, { title: value.trim() })
-    applyEvent({ type: 'task:updated', payload: updated })
+    const t = tasks.find((x) => x.id === taskId)
+    if (!t) return
+    applyEvent({ type: 'task:updated', payload: { ...t, title: value.trim() } })
   }
 
   const onOwnerBlur = async (taskId: string, value: string) => {
-    const updated = await patchTaskApi(taskId, { owner: value.trim() })
-    applyEvent({ type: 'task:updated', payload: updated })
+    const t = tasks.find((x) => x.id === taskId)
+    if (!t) return
+    applyEvent({ type: 'task:updated', payload: { ...t, owner: value.trim() } })
   }
 
   const onDragStart = (id: string) => setDragId(id)
@@ -125,16 +154,16 @@ export default function BoardTable() {
     if (from === -1 || to === -1) return
     const [row] = list.splice(from, 1)
     list.splice(to, 0, row)
-    const updatedRows = await Promise.all(
-      list.map((t, index) => patchTaskApi(t.id, { order: index })),
-    )
-    for (const u of updatedRows) applyEvent({ type: 'task:updated', payload: u })
+    for (const [index, t] of list.entries()) {
+      applyEvent({ type: 'task:updated', payload: { ...t, order: index } })
+    }
     setDragId(null)
   }
   const onDragEnd = () => setDragId(null)
 
   const onExport = async () => {
-    const snapshot = await exportBoardApi()
+    if (!board) return
+    const snapshot = { board, tasks, cells: Object.values(cells) }
     const blob = new Blob([JSON.stringify(snapshot, null, 2)], {
       type: 'application/json',
     })
@@ -151,7 +180,7 @@ export default function BoardTable() {
     if (!file) return
     const text = await file.text()
     const snapshot = JSON.parse(text)
-    await importBoardApi(snapshot)
+    useBoardStore.getState().applySnapshot(snapshot)
   }
 
   return (
@@ -173,20 +202,52 @@ export default function BoardTable() {
             <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
               Project
             </div>
+            <select
+              value={projectId ?? ''}
+              onChange={(e) => {
+                const next = e.target.value
+                if (!next) return
+                void selectProject(next)
+              }}
+              className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+            >
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+            <input
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              className="w-[200px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+              placeholder="New project name"
+            />
+            <button
+              onClick={() => {
+                const n = newProjectName.trim()
+                if (!n) return
+                setNewProjectName('')
+                void createProject(n)
+              }}
+              className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
+              type="button"
+            >
+              Create
+            </button>
             <input
               value={projectNameDraft}
               onChange={(e) => setProjectNameDraft(e.target.value)}
-              onBlur={async () => {
+              onBlur={() => {
                 const next = projectNameDraft.trim()
                 if (!next) {
                   setProjectNameDraft(board?.projectName ?? '')
                   return
                 }
-                await patchBoardApi({ projectName: next })
-                applyEvent({ type: 'board:updated', payload: { projectName: next } })
+                void renameCurrentProject(next)
               }}
-              className="w-[280px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-              placeholder="e.g. CRM rollout"
+              className="w-[220px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+              placeholder="Rename current"
             />
             <div className="ml-2 flex items-center gap-2">
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
@@ -205,7 +266,6 @@ export default function BoardTable() {
                     setStartDateDraft(board?.startDate ?? '')
                     return
                   }
-                  await patchBoardApi({ startDate: next })
                   applyEvent({ type: 'board:updated', payload: { startDate: next } })
                 }}
                 type="date"
@@ -227,7 +287,6 @@ export default function BoardTable() {
                     setEndDateDraft(board?.endDate ?? '')
                     return
                   }
-                  await patchBoardApi({ endDate: next })
                   applyEvent({ type: 'board:updated', payload: { endDate: next } })
                 }}
                 type="date"
@@ -244,6 +303,47 @@ export default function BoardTable() {
             <Plus className="h-3.5 w-3.5" />
             New task
           </button>
+          <input
+            value={backupName}
+            onChange={(e) => setBackupName(e.target.value)}
+            className="w-[180px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+            placeholder="Backup name"
+          />
+          <button
+            onClick={() => {
+              const n = backupName.trim()
+              if (!n) return
+              setBackupName('')
+              void saveSnapshot(n)
+            }}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
+            type="button"
+          >
+            Save backup
+          </button>
+          <select
+            value={restoreId}
+            onChange={(e) => setRestoreId(e.target.value)}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+          >
+            <option value="">Restore backup…</option>
+            {snapshots.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              if (!restoreId) return
+              void restoreSnapshot(restoreId)
+              setRestoreId('')
+            }}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
+            type="button"
+          >
+            Restore
+          </button>
           <button
             onClick={onExport}
             className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
@@ -256,19 +356,43 @@ export default function BoardTable() {
           </label>
           <div
             className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] ${
-              connected ? 'bg-emerald-50 text-emerald-700' : 'bg-stone-100 text-stone-500'
+              saveError
+                ? 'bg-rose-50 text-rose-700'
+                : saving
+                  ? 'bg-amber-50 text-amber-700'
+                  : dirty
+                    ? 'bg-stone-100 text-stone-500'
+                    : 'bg-emerald-50 text-emerald-700'
             }`}
           >
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${
-                connected ? 'bg-emerald-500' : 'bg-stone-400'
-              }`}
-            />
-            {connected ? 'Online' : 'Offline'}
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
+            {saveError
+              ? 'Save failed'
+              : saving
+                ? 'Saving…'
+                : dirty
+                  ? 'Unsaved'
+                  : lastSavedAt
+                    ? 'Saved'
+                    : 'Ready'}
           </div>
           <button
-            onClick={() => setToken(null)}
+            onClick={() => void saveNow()}
             className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
+          >
+            Save now
+          </button>
+          <button
+            onClick={() => void refreshSnapshots()}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
+            type="button"
+          >
+            Refresh
+          </button>
+          <button
+            onClick={() => void supabase.auth.signOut()}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
+            type="button"
           >
             Sign out
           </button>
