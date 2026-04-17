@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState, type MouseEvent, type DragEvent, type ChangeEvent } from 'react'
-import { Plus, Copy, Trash2 } from 'lucide-react'
+import { Copy, Trash2 } from 'lucide-react'
 import type { BoardSnapshot, CellRecord, CellStatus, TaskRow } from '../../shared/boardTypes'
 import { useBoardStore } from '@/stores/boardStore'
 import { buildDateColumns } from '@/utils/dateRange'
 import { cellKey } from '@/utils/cellKey'
 import ProgressRing from '@/components/ProgressRing'
-import NewTaskDialog from '@/components/NewTaskDialog'
 import { supabase } from '@/supabaseClient'
 
 const percentSteps: (0 | 25 | 50 | 75 | 100)[] = [0, 25, 50, 75, 100]
@@ -116,7 +115,6 @@ const normalizeImportedSnapshot = (raw: LegacySnapshot, currentProjectId: string
 export default function BoardTable() {
   const projectId = useBoardStore((s) => s.projectId)
   const projects = useBoardStore((s) => s.projects)
-  const snapshots = useBoardStore((s) => s.snapshots)
   const board = useBoardStore((s) => s.board)
   const tasks = useBoardStore((s) => s.tasks)
   const cells = useBoardStore((s) => s.cells)
@@ -130,19 +128,14 @@ export default function BoardTable() {
   const lastSavedAt = useBoardStore((s) => s.lastSavedAt)
   const selectProject = useBoardStore((s) => s.selectProject)
   const createProject = useBoardStore((s) => s.createProject)
-  const renameCurrentProject = useBoardStore((s) => s.renameCurrentProject)
-  const refreshSnapshots = useBoardStore((s) => s.refreshSnapshots)
-  const saveSnapshot = useBoardStore((s) => s.saveSnapshot)
-  const restoreSnapshot = useBoardStore((s) => s.restoreSnapshot)
   const saveNow = useBoardStore((s) => s.saveNow)
   const [dragId, setDragId] = useState<string | null>(null)
-  const [newTaskOpen, setNewTaskOpen] = useState(false)
   const [projectNameDraft, setProjectNameDraft] = useState('')
   const [startDateDraft, setStartDateDraft] = useState('')
   const [endDateDraft, setEndDateDraft] = useState('')
-  const [newProjectName, setNewProjectName] = useState('')
-  const [backupName, setBackupName] = useState('')
-  const [restoreId, setRestoreId] = useState('')
+  const [createOpen, setCreateOpen] = useState(false)
+  const [createName, setCreateName] = useState('')
+  const [collapsedByParent, setCollapsedByParent] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     load()
@@ -161,6 +154,31 @@ export default function BoardTable() {
         : [],
     [board],
   )
+
+  const rowMeta = useMemo(() => {
+    const isSubtaskTitle = (title: string) => title.trimStart().startsWith('↳')
+    let currentParentId: string | null = null
+    const rows = tasks.map((task) => {
+      const isSubtask = isSubtaskTitle(task.title || '')
+      if (!isSubtask) currentParentId = task.id
+      const parentId = isSubtask ? currentParentId : null
+      return { task, isSubtask, parentId }
+    })
+
+    const childrenCount: Record<string, number> = {}
+    for (const r of rows) {
+      if (r.isSubtask && r.parentId) {
+        childrenCount[r.parentId] = (childrenCount[r.parentId] || 0) + 1
+      }
+    }
+
+    const visibleRows = rows.filter((r) => {
+      if (!r.isSubtask || !r.parentId) return true
+      return !collapsedByParent[r.parentId]
+    })
+
+    return { visibleRows, childrenCount }
+  }, [tasks, collapsedByParent])
 
   const onCreateTask = async (input: { title: string; owner: string }) => {
     const order = tasks.length
@@ -249,42 +267,31 @@ export default function BoardTable() {
   const onDragEnd = () => setDragId(null)
 
   const onExport = async () => {
-    if (!board) return
-    const snapshot = { board, tasks, cells: Object.values(cells) }
-    const blob = new Blob([JSON.stringify(snapshot, null, 2)], {
-      type: 'application/json',
-    })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'board.json'
-    a.click()
-    URL.revokeObjectURL(url)
+    return
   }
 
   const onImport = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-    try {
-      const text = await file.text()
-      const parsed = JSON.parse(text) as LegacySnapshot
-      const snapshot = normalizeImportedSnapshot(parsed, projectId)
-      useBoardStore.getState().applySnapshot(snapshot)
-      await saveNow()
-    } catch {
-      window.alert('Import failed: invalid JSON format.')
-    } finally {
-      event.target.value = ''
+    event.target.value = ''
+  }
+
+  const isValidProjectName = (name: string): boolean => {
+    if (!name) return false
+    return !/[.,\s:|]/.test(name)
+  }
+
+  const submitCreateProject = async () => {
+    const n = createName.trim()
+    if (!isValidProjectName(n)) {
+      window.alert('Invalid project name. Not allowed: space . , : |')
+      return
     }
+    setCreateOpen(false)
+    setCreateName('')
+    await createProject(n)
   }
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <NewTaskDialog
-        open={newTaskOpen}
-        onClose={() => setNewTaskOpen(false)}
-        onCreate={onCreateTask}
-      />
       <header className="flex items-center justify-between gap-3 rounded-xl border border-amber-100 bg-gradient-to-r from-amber-50 to-rose-50 px-4 py-3 shadow-sm">
         <div className="flex flex-col">
           <h1 className="font-display text-base font-semibold tracking-tight text-stone-900">
@@ -302,9 +309,12 @@ export default function BoardTable() {
               onChange={(e) => {
                 const next = e.target.value
                 if (!next) return
+                if (dirty && !window.confirm('You have unsaved changes. Switch project and discard them?')) {
+                  return
+                }
                 void selectProject(next)
               }}
-              className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+              className="w-[620px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
             >
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -312,38 +322,15 @@ export default function BoardTable() {
                 </option>
               ))}
             </select>
-            <input
-              value={newProjectName}
-              onChange={(e) => setNewProjectName(e.target.value)}
-              className="w-[200px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-              placeholder="New project name"
-            />
             <button
               onClick={() => {
-                const n = newProjectName.trim()
-                if (!n) return
-                setNewProjectName('')
-                void createProject(n)
+                setCreateOpen(true)
               }}
               className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
               type="button"
             >
               Create
             </button>
-            <input
-              value={projectNameDraft}
-              onChange={(e) => setProjectNameDraft(e.target.value)}
-              onBlur={() => {
-                const next = projectNameDraft.trim()
-                if (!next) {
-                  setProjectNameDraft(board?.projectName ?? '')
-                  return
-                }
-                void renameCurrentProject(next)
-              }}
-              className="w-[220px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-              placeholder="Rename current"
-            />
             <div className="ml-2 flex items-center gap-2">
               <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-500">
                 Start
@@ -391,64 +378,6 @@ export default function BoardTable() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setNewTaskOpen(true)}
-            className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:bg-amber-600"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            New task
-          </button>
-          <input
-            value={backupName}
-            onChange={(e) => setBackupName(e.target.value)}
-            className="w-[180px] max-w-full rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-            placeholder="Backup name"
-          />
-          <button
-            onClick={() => {
-              const n = backupName.trim()
-              if (!n) return
-              setBackupName('')
-              void saveSnapshot(n)
-            }}
-            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
-            type="button"
-          >
-            Save backup
-          </button>
-          <select
-            value={restoreId}
-            onChange={(e) => setRestoreId(e.target.value)}
-            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
-          >
-            <option value="">Restore backup…</option>
-            {snapshots.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={() => {
-              if (!restoreId) return
-              void restoreSnapshot(restoreId)
-              setRestoreId('')
-            }}
-            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
-            type="button"
-          >
-            Restore
-          </button>
-          <button
-            onClick={onExport}
-            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
-          >
-            Export
-          </button>
-          <label className="cursor-pointer rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50">
-            Import
-            <input type="file" accept="application/json" className="hidden" onChange={onImport} />
-          </label>
           <div
             className={`flex items-center gap-1 rounded-full px-2 py-1 text-[10px] ${
               saveError
@@ -475,14 +404,7 @@ export default function BoardTable() {
             onClick={() => void saveNow()}
             className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
           >
-            Save now
-          </button>
-          <button
-            onClick={() => void refreshSnapshots()}
-            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
-            type="button"
-          >
-            Refresh
+            Save
           </button>
           <button
             onClick={() => void supabase.auth.signOut()}
@@ -493,6 +415,51 @@ export default function BoardTable() {
           </button>
         </div>
       </header>
+
+      {createOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white shadow-xl">
+            <div className="px-5 py-4">
+              <div className="font-display text-base font-semibold text-stone-900">Create project</div>
+              <div className="mt-1 text-xs text-stone-500">
+                Not allowed: space . , : |
+              </div>
+            </div>
+            <div className="px-5 pb-4">
+              <input
+                value={createName}
+                onChange={(e) => setCreateName(e.target.value)}
+                autoFocus
+                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
+                placeholder="Project_name"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void submitCreateProject()
+                  if (e.key === 'Escape') setCreateOpen(false)
+                }}
+              />
+            </div>
+            <div className="flex items-center justify-end gap-2 border-t border-stone-100 bg-stone-50 px-5 py-4">
+              <button
+                onClick={() => {
+                  setCreateOpen(false)
+                  setCreateName('')
+                }}
+                className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm text-stone-700 shadow-sm transition hover:bg-stone-50"
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => void submitCreateProject()}
+                className="rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-amber-600"
+                type="button"
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="relative flex-1 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
         {loading && (
@@ -531,7 +498,7 @@ export default function BoardTable() {
               </tr>
             </thead>
             <tbody>
-              {tasks.map((task) => (
+              {rowMeta.visibleRows.map(({ task, isSubtask }) => (
                 <tr
                   key={task.id}
                   draggable
@@ -543,10 +510,36 @@ export default function BoardTable() {
                 >
                   <td className="sticky left-0 z-10 w-[240px] min-w-[240px] border-r border-stone-200 bg-white px-2 py-2">
                     <div className="flex items-center gap-2">
+                      {!isSubtask ? (
+                        <button
+                          type="button"
+                          disabled={!rowMeta.childrenCount[task.id]}
+                          onClick={() =>
+                            setCollapsedByParent((prev) => ({
+                              ...prev,
+                              [task.id]: !prev[task.id],
+                            }))
+                          }
+                          className="h-5 w-5 shrink-0 rounded-md border border-stone-300 bg-white text-[11px] font-semibold leading-none text-stone-700 shadow-sm disabled:cursor-default disabled:opacity-35"
+                          title={
+                            rowMeta.childrenCount[task.id]
+                              ? collapsedByParent[task.id]
+                                ? 'Expand subtasks'
+                                : 'Collapse subtasks'
+                              : 'No subtasks'
+                          }
+                        >
+                          {collapsedByParent[task.id] ? '+' : '-'}
+                        </button>
+                      ) : (
+                        <span className="h-5 w-5 shrink-0" />
+                      )}
                       <input
                         defaultValue={task.title}
                         onBlur={(e) => onTitleBlur(task.id, e.target.value)}
-                        className="w-full border-none bg-transparent text-xs font-medium text-stone-800 outline-none"
+                        className={`w-full border-none bg-transparent text-xs outline-none ${
+                          isSubtask ? 'text-stone-700' : 'font-medium text-stone-800'
+                        }`}
                       />
                       <button
                         onClick={() => onDuplicateTask(task.id)}

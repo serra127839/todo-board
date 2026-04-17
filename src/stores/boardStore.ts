@@ -4,21 +4,15 @@ import type { RealtimeEvent } from '../../shared/realtimeTypes'
 import { cellKey } from '@/utils/cellKey'
 import {
   createProject,
-  createSnapshot,
   listProjects,
-  listSnapshots,
   loadProjectState,
-  loadSnapshot,
-  renameProject,
   saveProjectState,
   type ProjectRow,
-  type SnapshotRow,
 } from '@/api/supabaseRepo'
 
 type BoardState = {
   projectId: string | null
   projects: ProjectRow[]
-  snapshots: SnapshotRow[]
   board?: Board
   tasks: TaskRow[]
   cells: Record<string, CellRecord>
@@ -33,10 +27,6 @@ type BoardState = {
   refreshProjects: () => Promise<void>
   selectProject: (projectId: string) => Promise<void>
   createProject: (name: string) => Promise<void>
-  refreshSnapshots: () => Promise<void>
-  renameCurrentProject: (name: string) => Promise<void>
-  saveSnapshot: (name: string) => Promise<void>
-  restoreSnapshot: (snapshotId: string) => Promise<void>
   saveNow: () => Promise<void>
   setConnected: (connected: boolean) => void
   applySnapshot: (snapshot: BoardSnapshot) => void
@@ -62,12 +52,14 @@ const addDaysIso = (iso: string, days: number): string => {
   return d.toISOString().slice(0, 10)
 }
 
-let saveTimer: number | undefined
+const uid = (): string =>
+  globalThis.crypto && 'randomUUID' in globalThis.crypto
+    ? globalThis.crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`
 
 export const useBoardStore = create<BoardState>((set, get) => ({
   projectId: null,
   projects: [],
-  snapshots: [],
   tasks: [],
   cells: {},
   loading: false,
@@ -80,7 +72,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     try {
       const projects = await listProjects()
       if (projects.length === 0) {
-        const created = await createProject('Main project')
+        const created = await createProject('Main_project')
         const nextProjects = [created]
         set({ projects: nextProjects })
       } else {
@@ -126,60 +118,22 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       const endDate = addDaysIso(startDate, 21)
       const fresh: BoardSnapshot = {
         board: { id: projectId, startDate, endDate, projectName },
-        tasks: [],
+        tasks: [{ id: uid(), title: '', owner: '', order: 0 }],
         cells: [],
       }
       set({
         board: fresh.board,
-        tasks: [],
+        tasks: fresh.tasks,
         cells: {},
         dirty: true,
       })
-      await get().saveNow()
     }
-    await get().refreshSnapshots()
     set({ loading: false })
   },
   createProject: async (name) => {
     const created = await createProject(name.trim())
     set((s) => ({ projects: [created, ...s.projects] }))
     await get().selectProject(created.id)
-  },
-  refreshSnapshots: async () => {
-    const projectId = get().projectId
-    if (!projectId) return
-    const snapshots = await listSnapshots(projectId)
-    set({ snapshots })
-  },
-  renameCurrentProject: async (name) => {
-    const projectId = get().projectId
-    if (!projectId) return
-    const updated = await renameProject(projectId, name.trim())
-    set((s) => ({
-      projects: s.projects.map((p) => (p.id === updated.id ? updated : p)),
-      board: s.board ? { ...s.board, projectName: updated.name } : s.board,
-    }))
-    scheduleSave(get, set)
-  },
-  saveSnapshot: async (name) => {
-    const projectId = get().projectId
-    const board = get().board
-    if (!projectId || !board) return
-    const snapshot = toSnapshot(board, get().tasks, get().cells)
-    await createSnapshot(projectId, name.trim(), snapshot)
-    await get().refreshSnapshots()
-  },
-  restoreSnapshot: async (snapshotId) => {
-    const projectId = get().projectId
-    if (!projectId) return
-    const snapshot = await loadSnapshot(snapshotId)
-    set({
-      board: { ...snapshot.board, id: projectId },
-      tasks: [...snapshot.tasks].sort((a, b) => a.order - b.order),
-      cells: toCellMap(snapshot.cells),
-      dirty: true,
-    })
-    await get().saveNow()
   },
   saveNow: async () => {
     const projectId = get().projectId
@@ -231,7 +185,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
             }
           : s,
       )
-      scheduleSave(get, set)
       return
     }
 
@@ -243,7 +196,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         },
         dirty: true,
       }))
-      scheduleSave(get, set)
       return
     }
 
@@ -256,7 +208,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         }
         return { tasks: nextTasks, cells: nextCells, dirty: true }
       })
-      scheduleSave(get, set)
       return
     }
 
@@ -268,7 +219,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
           dirty: true,
         }
       })
-      scheduleSave(get, set)
       return
     }
 
@@ -279,18 +229,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
           .sort((a, b) => a.order - b.order),
         dirty: true,
       }))
-      scheduleSave(get, set)
     }
   },
 }))
-
-function scheduleSave(
-  get: () => BoardState,
-  set: (partial: Partial<BoardState> | ((s: BoardState) => Partial<BoardState>)) => void,
-): void {
-  set({ dirty: true })
-  if (saveTimer) window.clearTimeout(saveTimer)
-  saveTimer = window.setTimeout(() => {
-    void get().saveNow()
-  }, 600)
-}
