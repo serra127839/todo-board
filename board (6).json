@@ -1,0 +1,2034 @@
+{
+  "board": {
+    "projectName": "31200_JLR EMA RSF ABO2",
+    "startIso": "2026-04-13",
+    "endIso": "2026-04-30"
+  },
+  "tasks": [
+    {
+      "id": "0b90c395-fd8e-4201-adb7-c013edc9e3a8",
+      "title": "ECR update for RH Straps Op610",
+      "owner": "Ivan",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "922942c1-7379-4382-a135-781d2c4192c5",
+      "title": "Piercing auto for AWS",
+      "owner": "Robert",
+      "order": 3,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "e3010fe2-3291-4520-9130-0ed323fe5374",
+      "title": "Cycle time improve Op200 for AWS",
+      "owner": "Jordi",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "29a47006-f8dc-4dde-973a-0ec13c225740",
+      "title": "Weld seams remaining no conformity except Gap",
+      "owner": "Jordi",
+      "order": 4,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "265f0a5c-dac9-49c0-9452-b6a237e9bcfa",
+      "title": "Works to prepare Keyence Camera R@R",
+      "owner": "Ivan",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "a8b42341-97ef-4e6e-b81f-61635fcb5ae2",
+      "parentId": "265f0a5c-dac9-49c0-9452-b6a237e9bcfa",
+      "title": "Info from OTM layout and Robcad simulation video",
+      "owner": "Diego",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "4549efd8-d7d9-4351-a5b2-553c2f9e61f3",
+      "parentId": "265f0a5c-dac9-49c0-9452-b6a237e9bcfa",
+      "title": "Post floor fixation",
+      "owner": "Ivan",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "186b5e01-c68f-469f-994f-d9bd590a3861",
+      "parentId": "0b90c395-fd8e-4201-adb7-c013edc9e3a8",
+      "title": "Installation till poweon Op610 units (2+2)",
+      "owner": "Ivan",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "44d66b46-2c3e-4caa-a6ae-44687dfefbab",
+      "parentId": "0b90c395-fd8e-4201-adb7-c013edc9e3a8",
+      "title": "Part matching with manually applied nuts",
+      "owner": "Ivan",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "052cb908-3c1b-4189-bd4b-8805b58e6213",
+      "parentId": "0b90c395-fd8e-4201-adb7-c013edc9e3a8",
+      "title": "First part welded in auto mode",
+      "owner": "Robert",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "0234486d-8743-4c31-a698-0186cbeba3c7",
+      "parentId": "0b90c395-fd8e-4201-adb7-c013edc9e3a8",
+      "title": "Quality report feedback Geo+Cut&Etch.",
+      "owner": "Ivan/Jordi",
+      "order": 3,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "a5360ff3-431a-4f6b-a329-0b230170491d",
+      "parentId": "e3010fe2-3291-4520-9130-0ed323fe5374",
+      "title": "Video recorder Op200 runing AWS",
+      "owner": "Diego",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "39802411-f75d-49fb-a74a-c476e5e2ad17",
+      "parentId": "e3010fe2-3291-4520-9130-0ed323fe5374",
+      "title": "Weld seam sequence/speed/process improve",
+      "owner": "Diego",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "a50ffc02-e9a9-47f0-9ef7-508ba2b76f7c",
+      "parentId": "e3010fe2-3291-4520-9130-0ed323fe5374",
+      "title": "Performance demonstration on HMI counter",
+      "owner": "Diego",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "a818c682-bf0b-47e0-b721-c14b8c47da5e",
+      "parentId": "922942c1-7379-4382-a135-781d2c4192c5",
+      "title": "Info for Collision Adjustment model AWS",
+      "owner": "Diego",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "7f762e1c-da75-4bd3-99dc-f4fa0f2f42ea",
+      "parentId": "265f0a5c-dac9-49c0-9452-b6a237e9bcfa",
+      "title": "Robot and Plc programming by GESTAMP",
+      "owner": "Ivan",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 75,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "e965afb9-2e1c-4efb-adfd-5a443e4f8581",
+      "parentId": "265f0a5c-dac9-49c0-9452-b6a237e9bcfa",
+      "title": "Result of quality discrimination and management I4.0",
+      "owner": "Diego",
+      "order": 3,
+      "cells": {
+        "2026-04-13": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "1494c0e4-84b3-49b9-bd26-e83e14ea9c4e",
+      "parentId": "922942c1-7379-4382-a135-781d2c4192c5",
+      "title": "Adjustment and Auto mode trial",
+      "owner": "Diego",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "4537a457-4aec-40ce-b32c-383c6a676af8",
+      "parentId": "922942c1-7379-4382-a135-781d2c4192c5",
+      "title": "SUSSMILCH works for Tcy also 2WD",
+      "owner": "Diego",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "2a15fe12-a61f-4d2e-8936-44ee1658ed85",
+      "parentId": "29a47006-f8dc-4dde-973a-0ec13c225740",
+      "title": "Changed weld seams (last batch+rails bush+speed op200)",
+      "owner": "Jordi",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "8281a4f5-7dad-4f7e-8623-cf85440cf75a",
+      "parentId": "29a47006-f8dc-4dde-973a-0ec13c225740",
+      "title": "Changes suggested by PPT for AWS CMM Report",
+      "owner": "Jordi",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "2f8b1878-4b8b-4390-871d-b99932e559c1",
+      "title": "Gestamp training and JLR 50+50 sets manufacturing",
+      "owner": "Diego",
+      "order": 5,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "b271a726-6949-4f1e-bfad-1333021183d7",
+      "parentId": "2f8b1878-4b8b-4390-871d-b99932e559c1",
+      "title": "User's manual training SERRA",
+      "owner": "Robert",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "356862df-a854-4944-873d-92b462ce4d5e",
+      "parentId": "2f8b1878-4b8b-4390-871d-b99932e559c1",
+      "title": "Internal process training GESTAMP",
+      "owner": "Diego",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 75,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    },
+    {
+      "id": "0dffa75f-32a2-49af-8558-6ce5ce2561c3",
+      "parentId": "2f8b1878-4b8b-4390-871d-b99932e559c1",
+      "title": "Real production focussed in quality",
+      "owner": "Diego",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 25,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 50,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 75,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      }
+    }
+  ]
+}
