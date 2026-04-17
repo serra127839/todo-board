@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type MouseEvent, type DragEvent, type ChangeEvent } from 'react'
 import { Plus, Copy, Trash2 } from 'lucide-react'
-import type { CellStatus } from '../../shared/boardTypes'
+import type { BoardSnapshot, CellRecord, CellStatus, TaskRow } from '../../shared/boardTypes'
 import { useBoardStore } from '@/stores/boardStore'
 import { buildDateColumns } from '@/utils/dateRange'
 import { cellKey } from '@/utils/cellKey'
@@ -25,6 +25,93 @@ const uid = (): string =>
   globalThis.crypto && 'randomUUID' in globalThis.crypto
     ? globalThis.crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`
+
+type LegacyTask = {
+  id: string
+  title?: string
+  owner?: string
+  order?: number
+  parentId?: string | null
+  cells?: Record<string, { percent?: number; status?: string }>
+}
+
+type LegacySnapshot = {
+  board?: {
+    projectName?: string
+    startIso?: string
+    endIso?: string
+    startDate?: string
+    endDate?: string
+  }
+  tasks?: LegacyTask[]
+  cells?: CellRecord[]
+}
+
+const toAllowedPercent = (value: unknown): 0 | 25 | 50 | 75 | 100 => {
+  const n = Number(value)
+  if (n >= 100) return 100
+  if (n >= 75) return 75
+  if (n >= 50) return 50
+  if (n >= 25) return 25
+  return 0
+}
+
+const toAllowedStatus = (value: unknown): CellStatus => {
+  if (value === 'red' || value === 'yellow' || value === 'green' || value === 'black') return value
+  return 'green'
+}
+
+const normalizeImportedSnapshot = (raw: LegacySnapshot, currentProjectId: string | null): BoardSnapshot => {
+  const rawTasks = Array.isArray(raw.tasks) ? raw.tasks : []
+  const tasks: TaskRow[] = rawTasks.map((t, index) => ({
+    id: String(t.id || uid()),
+    title: String(t.title || ''),
+    owner: String(t.owner || ''),
+    order: index,
+  }))
+
+  const fromFlatCells = Array.isArray(raw.cells) ? raw.cells : []
+  const fromTaskCells: CellRecord[] = rawTasks.flatMap((task) => {
+    const taskId = String(task.id || '')
+    const taskCells = task.cells || {}
+    return Object.entries(taskCells).map(([date, value]) => ({
+      taskId,
+      date,
+      value: {
+        percent: toAllowedPercent(value?.percent),
+        status: toAllowedStatus(value?.status),
+      },
+      updatedAt: new Date().toISOString(),
+    }))
+  })
+
+  const mergedCells = fromFlatCells.length > 0 ? fromFlatCells : fromTaskCells
+  const dedup = new Map<string, CellRecord>()
+  for (const c of mergedCells) {
+    dedup.set(cellKey(c.taskId, c.date), {
+      ...c,
+      value: {
+        percent: toAllowedPercent(c?.value?.percent),
+        status: toAllowedStatus(c?.value?.status),
+      },
+      updatedAt: c.updatedAt || new Date().toISOString(),
+    })
+  }
+
+  const startDate = raw.board?.startDate || raw.board?.startIso || new Date().toISOString().slice(0, 10)
+  const endDate = raw.board?.endDate || raw.board?.endIso || startDate
+
+  return {
+    board: {
+      id: currentProjectId || uid(),
+      projectName: raw.board?.projectName || 'Imported project',
+      startDate,
+      endDate,
+    },
+    tasks,
+    cells: Array.from(dedup.values()),
+  }
+}
 
 export default function BoardTable() {
   const projectId = useBoardStore((s) => s.projectId)
@@ -178,9 +265,17 @@ export default function BoardTable() {
   const onImport = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    const text = await file.text()
-    const snapshot = JSON.parse(text)
-    useBoardStore.getState().applySnapshot(snapshot)
+    try {
+      const text = await file.text()
+      const parsed = JSON.parse(text) as LegacySnapshot
+      const snapshot = normalizeImportedSnapshot(parsed, projectId)
+      useBoardStore.getState().applySnapshot(snapshot)
+      await saveNow()
+    } catch {
+      window.alert('Import failed: invalid JSON format.')
+    } finally {
+      event.target.value = ''
+    }
   }
 
   return (
