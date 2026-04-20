@@ -423,12 +423,17 @@
       }
 
       const cloudPull = async () => {
-        if (!cloud.enabled || !cloud.authed) return
-        const { data, error } = await supabase.from('shared_state').select('data,updated_at').eq('id', SHARED_STATE_ID).maybeSingle()
+        if (!cloud.enabled || !cloud.authed) return false
+        const { data, error } = await supabase
+          .from('shared_state')
+          .select('data,updated_at')
+          .eq('id', SHARED_STATE_ID)
+          .maybeSingle()
         if (error) throw new Error(error.message)
-        if (!data?.data) return
+        if (!data?.data) return false
         applyPayloadToStorage(data.data)
         cloud.lastPulledAt = new Date().toISOString()
+        return true
       }
 
       const cloudSave = async () => {
@@ -1166,6 +1171,7 @@
 
       const startApp = async () => {
         bootstrapFromEmbedded()
+        init()
 
         if (cloud.enabled) {
           supabase.auth.onAuthStateChange((_event, session) => {
@@ -1175,16 +1181,22 @@
             const { data } = await supabase.auth.getSession()
             cloud.authed = Boolean(data.session)
             if (cloud.authed) {
-              try {
-                await cloudPull()
-              } catch {}
+              const pulled = await cloudPull().catch(() => false)
+              if (pulled) {
+                hydrateFromStorage()
+                render()
+              } else {
+                const payload = buildPayloadFromStorage()
+                const hasAnyData = payload.projects.some((name) => !!payload.dataByProject?.[name])
+                if (hasAnyData) {
+                  await cloudSave().catch(() => {})
+                }
+              }
             } else {
               openAuthModal()
             }
           } catch {}
         }
-
-        init()
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', startApp, { once: true })
