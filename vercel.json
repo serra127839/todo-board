@@ -1,8 +1,9 @@
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+  "builds": [
+    { "src": "tableaux2.html", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/$", "dest": "/tableaux2.html" },
+    { "src": "/(.*)", "dest": "/tableaux2.html" }
   ]
 }
