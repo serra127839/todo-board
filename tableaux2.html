@@ -236,7 +236,33 @@
       </div>
     </div>
 
-    <script>
+    <div id="authModal" class="modal-backdrop" role="dialog" aria-modal="true">
+      <div class="modal">
+        <div class="modal-head">Cloud access</div>
+        <div class="modal-body">
+          <input id="authEmail" type="email" placeholder="Email" style="width:100%; border-radius:10px;" />
+          <div style="height:10px"></div>
+          <input id="authPassword" type="password" placeholder="Password" style="width:100%; border-radius:10px;" />
+          <div id="authError" class="hint" style="color:#b91c1c; display:none;"></div>
+          <div class="hint">Usa tu cuenta (o crea una). Todos verán el mismo tablero compartido.</div>
+        </div>
+        <div class="modal-foot">
+          <button id="btnAuthCancel" type="button">Cancel</button>
+          <button id="btnAuthSignup" type="button">Create account</button>
+          <button id="btnAuthSignin" class="primary" type="button">Sign in</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+      const SUPABASE_URL = 'https://mymymopjkguzqiwsuhij.supabase.co'
+      const SUPABASE_ANON_KEY = 'sb_publishable_A5ST6N5ntTmOBMz5kIDv7Q_5PXvYD0m'
+      const SHARED_STATE_ID = 'main'
+
+      const supabase = SUPABASE_URL && SUPABASE_ANON_KEY ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null
+
       const STORAGE_INDEX = 'tableaux:projects:index'
       const STORAGE_CURRENT = 'tableaux:projects:current'
       const STORAGE_PREFIX = 'tableaux:project:'
@@ -332,6 +358,105 @@
 
       const setDirty = (v) => {
         state.dirty = v
+        if (v) scheduleCloudSave()
+      }
+
+      const cloud = {
+        enabled: Boolean(supabase),
+        authed: false,
+        saving: false,
+        lastPulledAt: null,
+        lastSavedAt: null,
+        saveTimer: null,
+      }
+
+      const showAuthError = (msg) => {
+        const el = document.getElementById('authError')
+        el.style.display = msg ? 'block' : 'none'
+        el.textContent = msg || ''
+      }
+
+      const openAuthModal = () => {
+        if (!cloud.enabled) return
+        showAuthError('')
+        document.getElementById('authModal').style.display = 'grid'
+        setTimeout(() => document.getElementById('authEmail')?.focus?.(), 0)
+      }
+
+      const closeAuthModal = () => {
+        document.getElementById('authModal').style.display = 'none'
+      }
+
+      const buildPayloadFromStorage = () => {
+        const projects = state.projects.slice()
+        const dataByProject = {}
+        for (const name of projects) {
+          const raw = storage.getItem(STORAGE_PREFIX + name)
+          if (!raw) continue
+          try {
+            dataByProject[name] = JSON.parse(raw)
+          } catch {}
+        }
+        return {
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          current: state.current,
+          projects,
+          dataByProject,
+        }
+      }
+
+      const applyPayloadToStorage = (payload) => {
+        if (!payload || typeof payload !== 'object') return
+        const projects = Array.isArray(payload.projects) ? payload.projects.filter((x) => typeof x === 'string') : []
+        const current = typeof payload.current === 'string' ? payload.current : null
+        const dataByProject = payload.dataByProject && typeof payload.dataByProject === 'object' ? payload.dataByProject : {}
+        if (!projects.length) return
+
+        for (const name of projects) {
+          const data = dataByProject[name]
+          if (!data) continue
+          storage.setItem(STORAGE_PREFIX + name, JSON.stringify(data))
+        }
+        storage.setItem(STORAGE_INDEX, JSON.stringify(projects))
+        if (current && projects.includes(current)) storage.setItem(STORAGE_CURRENT, current)
+      }
+
+      const cloudPull = async () => {
+        if (!cloud.enabled || !cloud.authed) return
+        const { data, error } = await supabase.from('shared_state').select('data,updated_at').eq('id', SHARED_STATE_ID).maybeSingle()
+        if (error) throw new Error(error.message)
+        if (!data?.data) return
+        applyPayloadToStorage(data.data)
+        cloud.lastPulledAt = new Date().toISOString()
+      }
+
+      const cloudSave = async () => {
+        if (!cloud.enabled || !cloud.authed) return
+        if (cloud.saving) return
+        cloud.saving = true
+        try {
+          saveCurrentProject()
+          saveCurrentName()
+          const payload = buildPayloadFromStorage()
+          const { error } = await supabase
+            .from('shared_state')
+            .upsert({ id: SHARED_STATE_ID, data: payload }, { onConflict: 'id' })
+          if (error) throw new Error(error.message)
+          cloud.lastSavedAt = new Date().toISOString()
+          setDirty(false)
+        } finally {
+          cloud.saving = false
+        }
+      }
+
+      const scheduleCloudSave = () => {
+        if (!cloud.enabled || !cloud.authed) return
+        if (cloud.saveTimer) clearTimeout(cloud.saveTimer)
+        cloud.saveTimer = setTimeout(() => {
+          cloud.saveTimer = null
+          cloudSave().catch(() => {})
+        }, 800)
       }
 
       const getCell = (taskId, date) => {
@@ -565,6 +690,56 @@
           state.zoom = 1
           applyZoom()
         })
+
+        if (cloud.enabled) {
+          const signin = async () => {
+            showAuthError('')
+            const email = document.getElementById('authEmail').value.trim()
+            const password = document.getElementById('authPassword').value
+            if (!email || !password) {
+              showAuthError('Rellena email y contraseña.')
+              return
+            }
+            const { error } = await supabase.auth.signInWithPassword({ email, password })
+            if (error) {
+              showAuthError(error.message)
+              return
+            }
+            closeAuthModal()
+            cloud.authed = true
+            try {
+              await cloudPull()
+              hydrateFromStorage()
+              render()
+            } catch (e) {
+              showAuthError(String(e?.message || e))
+              openAuthModal()
+            }
+          }
+
+          const signup = async () => {
+            showAuthError('')
+            const email = document.getElementById('authEmail').value.trim()
+            const password = document.getElementById('authPassword').value
+            if (!email || !password) {
+              showAuthError('Rellena email y contraseña.')
+              return
+            }
+            const { error } = await supabase.auth.signUp({ email, password })
+            if (error) {
+              showAuthError(error.message)
+              return
+            }
+            showAuthError('Cuenta creada. Si tu proyecto requiere confirmación por email, confirma y vuelve a entrar.')
+          }
+
+          document.getElementById('btnAuthCancel').addEventListener('click', () => closeAuthModal())
+          document.getElementById('btnAuthSignin').addEventListener('click', () => void signin())
+          document.getElementById('btnAuthSignup').addEventListener('click', () => void signup())
+          document.getElementById('authPassword').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') void signin()
+          })
+        }
 
         let isPanning = false
         let panStartX = 0
@@ -905,7 +1080,9 @@
         applyZoom()
       }
 
-      const init = () => {
+      let didBind = false
+
+      const hydrateFromStorage = () => {
         let idx = []
         try {
           idx = JSON.parse(storage.getItem(STORAGE_INDEX) || '[]')
@@ -929,7 +1106,14 @@
         saveCurrentName()
         loadProject(state.current)
         setDirty(false)
-        bind()
+      }
+
+      const init = () => {
+        hydrateFromStorage()
+        if (!didBind) {
+          bind()
+          didBind = true
+        }
         render()
       }
 
@@ -980,8 +1164,26 @@
         } catch {}
       }
 
-      const startApp = () => {
+      const startApp = async () => {
         bootstrapFromEmbedded()
+
+        if (cloud.enabled) {
+          supabase.auth.onAuthStateChange((_event, session) => {
+            cloud.authed = Boolean(session)
+          })
+          try {
+            const { data } = await supabase.auth.getSession()
+            cloud.authed = Boolean(data.session)
+            if (cloud.authed) {
+              try {
+                await cloudPull()
+              } catch {}
+            } else {
+              openAuthModal()
+            }
+          } catch {}
+        }
+
         init()
       }
       if (document.readyState === 'loading') {
@@ -1014,6 +1216,9 @@
         loadProject(name)
         setDirty(false)
         render()
+        if (cloud.enabled && cloud.authed) {
+          cloudSave().catch(() => {})
+        }
       }
 
       document.addEventListener('dragover', (e) => {
