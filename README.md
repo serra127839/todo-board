@@ -1,57 +1,46 @@
-# React + TypeScript + Vite
+# ToDoLst (Tableaux)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web (Vite + React + TypeScript) con guardado universal usando Supabase (Auth + Postgres) y despliegue gratuito en Vercel.
 
-Currently, two official plugins are available:
+## Desarrollo local
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. Crea un fichero `.env` (puedes copiar `.env.example`).
+2. Rellena:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Arranca:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Supabase (gratis)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Crea un proyecto en Supabase (plan Free).
+2. Ve a **SQL Editor** y ejecuta el contenido de [supabase_schema.sql](file:///c:/Didako/ToDoLst/supabase_schema.sql).
+3. Ve a **Authentication → Providers**:
+   - Para empezar fácil, usa Email/Password.
+4. Ve a **Project Settings → API** y copia:
+   - Project URL → `VITE_SUPABASE_URL`
+   - anon public key → `VITE_SUPABASE_ANON_KEY`
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Vercel (gratis)
+
+1. Importa el repo en Vercel (plan Hobby).
+2. En **Environment Variables**, configura:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Deploy.
+
+## Qué guarda y cómo
+
+- Proyectos: tabla `projects`
+- Estado actual por proyecto: tabla `project_state`
+- Snapshots históricos: tabla `snapshots`
+- Acceso y seguridad: RLS por usuario (`auth.uid()`)
+
+## Solución de problemas
+
+- Error “Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY”: faltan variables de entorno.
+- Veo proyectos de otros: revisa que se ejecutó `supabase_schema.sql` (RLS + policies).

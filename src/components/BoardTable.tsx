@@ -5,7 +5,7 @@ import { useBoardStore } from '@/stores/boardStore'
 import { buildDateColumns } from '@/utils/dateRange'
 import { cellKey } from '@/utils/cellKey'
 import ProgressRing from '@/components/ProgressRing'
-import { supabase } from '@/supabaseClient'
+import { getSupabase } from '@/supabaseClient'
 
 const percentSteps: (0 | 25 | 50 | 75 | 100)[] = [0, 25, 50, 75, 100]
 const nextPercent = (current: 0 | 25 | 50 | 75 | 100): 0 | 25 | 50 | 75 | 100 => {
@@ -407,7 +407,7 @@ export default function BoardTable() {
             Save
           </button>
           <button
-            onClick={() => void supabase.auth.signOut()}
+            onClick={() => void getSupabase().auth.signOut()}
             className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
             type="button"
           >

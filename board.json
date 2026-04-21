@@ -1,0 +1,333 @@
+{
+  "board": {
+    "projectName": "31200_JLR EMA RSF ABO2",
+    "startIso": "2026-04-13",
+    "endIso": "2026-04-30"
+  },
+  "tasks": [
+    {
+      "id": "0b90c395-fd8e-4201-adb7-c013edc9e3a8",
+      "title": "ECR update for RH Straps Op610",
+      "owner": "Ivan",
+      "order": 0,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 100,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "922942c1-7379-4382-a135-781d2c4192c5",
+      "title": "Piercing auto for AWS",
+      "owner": "Robert",
+      "order": 2,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "e3010fe2-3291-4520-9130-0ed323fe5374",
+      "title": "Cycle time improve Op200 for AWS",
+      "owner": "Jordi",
+      "order": 1,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    },
+    {
+      "id": "29a47006-f8dc-4dde-973a-0ec13c225740",
+      "title": "Weld seams remaining no conformity except Gap",
+      "owner": "Jordi",
+      "order": 3,
+      "cells": {
+        "2026-04-13": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-14": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-15": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-16": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-17": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-18": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-19": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-20": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-21": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-22": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-23": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-24": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-25": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-26": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-27": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-28": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-29": {
+          "percent": 0,
+          "status": "green"
+        },
+        "2026-04-30": {
+          "percent": 0,
+          "status": "green"
+        }
+      },
+      "parentId": null
+    }
+  ]
+}

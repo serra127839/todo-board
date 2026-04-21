@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LockKeyhole } from 'lucide-react'
-import { supabase } from '@/supabaseClient'
+import { getSupabase, isSupabaseConfigured } from '@/supabaseClient'
 
 export default function LoginDialog() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -9,23 +9,34 @@ export default function LoginDialog() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const canSubmit = useMemo(
-    () => email.trim().length > 0 && password.trim().length > 0,
-    [email, password],
-  )
+  const emailRef = useRef<HTMLInputElement | null>(null)
+  const passwordRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     setError(null)
   }, [email, password, mode])
 
   const submit = async () => {
-    if (!canSubmit || busy) return
+    if (busy) return
+    if (!isSupabaseConfigured) {
+      setError('Falta configurar Supabase (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).')
+      return
+    }
+
+    const finalEmail = (email.trim() || emailRef.current?.value?.trim() || '').trim()
+    const finalPassword = password || passwordRef.current?.value || ''
+    if (!finalEmail || !finalPassword) {
+      setError('Rellena email y contraseña.')
+      return
+    }
+
     setBusy(true)
     try {
+      const supabase = getSupabase()
       if (mode === 'signin') {
         const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
+          email: finalEmail,
+          password: finalPassword,
         })
         if (error) {
           setError(error.message)
@@ -33,8 +44,8 @@ export default function LoginDialog() {
         }
       } else {
         const { error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
+          email: finalEmail,
+          password: finalPassword,
         })
         if (error) {
           setError(error.message)
@@ -79,7 +90,7 @@ export default function LoginDialog() {
               }`}
               type="button"
             >
-              Sign in
+              Tengo cuenta
             </button>
             <button
               onClick={() => setMode('signup')}
@@ -90,7 +101,7 @@ export default function LoginDialog() {
               }`}
               type="button"
             >
-              Create account
+              Crear cuenta
             </button>
           </div>
 
@@ -101,8 +112,11 @@ export default function LoginDialog() {
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onInput={(e) => setEmail((e.target as HTMLInputElement).value)}
+              ref={emailRef}
               autoFocus
               type="email"
+              autoComplete="email"
               className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
               placeholder="name@company.com"
               onKeyDown={(e) => {
@@ -118,7 +132,10 @@ export default function LoginDialog() {
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
+              ref={passwordRef}
               type="password"
+              autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
               className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-800 shadow-sm outline-none transition focus:border-amber-300 focus:ring-4 focus:ring-amber-100"
               placeholder="••••••••"
               onKeyDown={(e) => {
@@ -137,10 +154,11 @@ export default function LoginDialog() {
         <div className="flex items-center justify-end gap-2 border-t border-stone-100 bg-stone-50 px-5 py-4">
           <button
             onClick={submit}
-            disabled={!canSubmit || busy}
+            disabled={busy}
             className="rounded-full bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition enabled:hover:bg-amber-600 disabled:opacity-50"
+            type="button"
           >
-            {mode === 'signin' ? 'Sign in' : 'Create account'}
+            {busy ? (mode === 'signin' ? 'Entrando…' : 'Creando…') : mode === 'signin' ? 'Entrar' : 'Crear cuenta'}
           </button>
         </div>
       </div>

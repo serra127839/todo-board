@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useAuthStore } from '@/stores/authStore'
-import { supabase } from '@/supabaseClient'
+import { getSupabase, isSupabaseConfigured } from '@/supabaseClient'
 
 export const useHydrateAuth = (): void => {
   const hydrated = useAuthStore((s) => s.hydrated)
@@ -9,6 +9,15 @@ export const useHydrateAuth = (): void => {
   useEffect(() => {
     if (hydrated) return
     let cancelled = false
+
+    if (!isSupabaseConfigured) {
+      setSession(null)
+      return () => {
+        cancelled = true
+      }
+    }
+
+    const supabase = getSupabase()
 
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return
