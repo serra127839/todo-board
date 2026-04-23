@@ -26,3 +26,9 @@ dist-ssr
 *.sln
 *.sw?
 .vite
+
+# Local exports (offline snapshots / PDFs)
+*.pdf
+tableaux_*.html
+Tableaux_*.html
+*_Tableaux_*.html

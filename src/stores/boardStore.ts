@@ -26,7 +26,7 @@ type BoardState = {
   load: () => Promise<void>
   refreshProjects: () => Promise<void>
   selectProject: (projectId: string) => Promise<void>
-  createProject: (name: string) => Promise<void>
+  createProject: (name: string) => Promise<ProjectRow>
   saveNow: () => Promise<void>
   setConnected: (connected: boolean) => void
   applySnapshot: (snapshot: BoardSnapshot) => void
@@ -134,6 +134,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     const created = await createProject(name.trim())
     set((s) => ({ projects: [created, ...s.projects] }))
     await get().selectProject(created.id)
+    return created
   },
   saveNow: async () => {
     const projectId = get().projectId

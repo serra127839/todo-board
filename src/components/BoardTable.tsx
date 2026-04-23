@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type MouseEvent, type DragEvent, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type DragEvent, type ChangeEvent } from 'react'
 import { Copy, Trash2 } from 'lucide-react'
 import type { BoardSnapshot, CellRecord, CellStatus, TaskRow } from '../../shared/boardTypes'
 import { useBoardStore } from '@/stores/boardStore'
@@ -119,6 +119,7 @@ export default function BoardTable() {
   const tasks = useBoardStore((s) => s.tasks)
   const cells = useBoardStore((s) => s.cells)
   const load = useBoardStore((s) => s.load)
+  const applySnapshot = useBoardStore((s) => s.applySnapshot)
   const applyEvent = useBoardStore((s) => s.applyEvent)
   const loading = useBoardStore((s) => s.loading)
   const error = useBoardStore((s) => s.error)
@@ -136,6 +137,8 @@ export default function BoardTable() {
   const [createOpen, setCreateOpen] = useState(false)
   const [createName, setCreateName] = useState('')
   const [collapsedByParent, setCollapsedByParent] = useState<Record<string, boolean>>({})
+  const importInputRef = useRef<HTMLInputElement | null>(null)
+  const [importing, setImporting] = useState(false)
 
   useEffect(() => {
     load()
@@ -272,6 +275,39 @@ export default function BoardTable() {
 
   const onImport = async (event: ChangeEvent<HTMLInputElement>) => {
     event.target.value = ''
+    const file = event.target.files?.[0]
+    if (!file) return
+    if (importing) return
+    setImporting(true)
+    try {
+      const text = await file.text()
+      const raw: LegacySnapshot = JSON.parse(text)
+      const sanitize = (name: string): string =>
+        name
+          .trim()
+          .replace(/[.,\s:|]+/g, '_')
+          .replace(/^_+/, '')
+          .replace(/_+$/, '')
+      const baseCandidate = sanitize(String(raw?.board?.projectName || 'Imported_project'))
+      const baseName = isValidProjectName(baseCandidate) && baseCandidate ? baseCandidate : 'Imported_project'
+      const existing = new Set(projects.map((p) => p.name))
+      let name = baseName
+      let i = 1
+      while (existing.has(name)) {
+        name = `${baseName}_${i}`
+        i += 1
+      }
+
+      const created = await createProject(name)
+      const snapshot = normalizeImportedSnapshot(raw, created.id)
+      snapshot.board.projectName = name
+      applySnapshot(snapshot)
+      await saveNow()
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : 'Import failed')
+    } finally {
+      setImporting(false)
+    }
   }
 
   const isValidProjectName = (name: string): boolean => {
@@ -405,6 +441,22 @@ export default function BoardTable() {
             className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50"
           >
             Save
+          </button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={(e) => void onImport(e)}
+            className="hidden"
+          />
+          <button
+            onClick={() => importInputRef.current?.click()}
+            className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs text-stone-700 shadow-sm transition hover:bg-stone-50 disabled:opacity-50"
+            type="button"
+            disabled={importing || saving}
+            title="Import JSON into a new project"
+          >
+            {importing ? 'Importing…' : 'Import'}
           </button>
           <button
             onClick={() => void getSupabase().auth.signOut()}
