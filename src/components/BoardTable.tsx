@@ -274,8 +274,8 @@ export default function BoardTable() {
   }
 
   const onImport = async (event: ChangeEvent<HTMLInputElement>) => {
-    event.target.value = ''
     const file = event.target.files?.[0]
+    event.target.value = ''
     if (!file) return
     if (importing) return
     setImporting(true)
